@@ -4,7 +4,7 @@
 
 ## [1.1.0] - 2024-05-18
 
-- updated meta data explaination
+- updated meta data explanation
 
 [1.1.0]: https://github.com/visor-tech/visor-data-schema/releases/tag/1.1.0
 
