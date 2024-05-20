@@ -1,10 +1,12 @@
-# Image Data Schema
+# VISoR Image Data Schema
 
 ## Version
 1.1.0
+(Changed when standard updates)
 
 ## Update Date
 2024-05-20
+(Changed when standard updates, or the description significantly updates)
 
 ## Terms
 |||
@@ -19,6 +21,7 @@
 [The Paper](https://www.nature.com/articles/s41592-021-01326-w)
 
 ## Data Directory Hierarchy
+
 ```bash
  {SAMPLE_ID} (e.g. BB001)
  ├── Slice_{SLICE_INDEX}.zarr     (1-based)
@@ -42,6 +45,7 @@ a = zg['Resolution_Level_1']['Stack_1']['640nm_10X']
 
 ||||
 |---|---|---|
+| Item | Example value | Code to see the value |
 | Number of stacks | 3 | `len(zg['Resolution_Level_1'].keys())` |
 | Stack shape | (1474, 788, 2048) | `a.shape`       |
 | Frame shape | (788, 2048)       | `a[0].shape`    |
@@ -54,9 +58,9 @@ a = zg['Resolution_Level_1']['Stack_1']['640nm_10X']
 | Memory order  | 'C'             | `a.order` |
 ||||
 
-See [meta-data-schema.md](meta-data-schema.md) for Metadata.
+See [meta-data-schema.md](meta-data-schema.md) for the metadata.
 
 ## **!IMPORTANT!** Design Considerations 
-- One zarr file per Slice, with Slice level metadata
-- In a Slice, all Stacks have same number of Frames
-- Filled in all zeros for missing Frames
+- One zarr file per Slice, with Slice level metadata.
+- In a Slice, all Stacks have same number of Frames.
+- Filled in all zeros for missing Frames.
