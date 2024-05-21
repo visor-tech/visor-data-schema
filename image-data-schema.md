@@ -34,6 +34,8 @@
  │       │   │   ├── ...
 ```
 
+The file names are case-sensitive.
+
 ## Typical values
 
 Demo code:
