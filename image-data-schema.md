@@ -20,15 +20,31 @@
 
 ## Data Directory Hierarchy
 ```bash
- {SAMPLE_ID} (e.g. BB001)
- ├── Slice_{SLICE_INDEX}.zarr     (1-based)
- |   ├── .zattrs
- │   └── Resolution_Level_{RESOLUTION_LEVEL}
- │       ├── Stack_{STACK_INDEX}  (0-based)
- │       │   ├── {CHANNEL_ID} (e.g. 405nm_10X)
- │       │   │   ├── .zarray
- │       │   │   ├── {CHUNKS}
- │       │   │   ├── ...
+ {SAMPLE_ID}                              (e.g. BB001)
+ ├── VISoR_Raw_Images
+ |   └── Slice_{SLICE_INDEX}.zarr         (1-based)
+ |       ├── .zattrs
+ |       └── Resolution_Level_{RESOLUTION_LEVEL}
+ |           └── Stack_{STACK_INDEX}      (0-based)
+ |               └── {CHANNEL_ID}         (e.g. 405nm_10X)
+ |                   ├── .zarray
+ |                   ├── {CHUNKS}
+ |                   └── ...
+ └── VISoR_Reconstructed_Images
+     └── {VERSION}-{CHANNEL_ID}.zarr      (e.g. xxx-20240801-405nm_10X.zarr)
+         ├── .zattrs
+         ├── Whole_Sample
+         |   └── {RESOLUTION}             (e.g. 1.0)
+         |       ├── .zarray
+         |       ├── {CHUNKS}
+         |       └── ...
+         └── Slices (optional)
+             └── Slice_{SLICE_INDEX}      (1-based, e.g. Slice_1)
+                 ├── .zattrs
+                 └── {RESOLUTION}         (e.g. 1.0)
+                     ├── .zarray
+                     ├── {CHUNKS}
+                     └── ...
 ```
 
 ## Typical values
