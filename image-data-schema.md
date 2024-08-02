@@ -33,18 +33,17 @@
  └── VISoR_Reconstructed_Images (optional)
      └── {VERSION}-{CHANNEL}.zarr                 (e.g. xxx-20240801-405nm_10X.zarr)
          ├── .zattrs
-         └── [ Whole_Sample / Slice_{SLICE_INDEX} / {ROI} ] (optional)
+         └── {ROI} (e.g. Whole_Sample / Slice_{SLICE_INDEX} / or arbitrary ROI name)
              ├── .zattrs
-             └── {RESOLUTION}                     (e.g. 1um)
-                 ├── Transform
-                 |   ├── .zarray
-                 |   ├── {CHUNKS}
-                 |   └── ...
-                 └── Image
+             ├── Transform
+             |   ├── .zarray
+             |   ├── {CHUNKS}
+             |   └── ...
+             └── Image
+                 └── {RESOLUTION}                     (e.g. 1um)
                      ├── .zarray
                      ├── {CHUNKS}
                      └── ...
-
 ```
 
 ## Typical values
