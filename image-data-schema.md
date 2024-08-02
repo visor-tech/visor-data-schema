@@ -33,7 +33,7 @@
  └── VISoR_Reconstructed_Images (optional)
      └── {VERSION}-{CHANNEL}.zarr                 (e.g. xxx-20240801-405nm_10X.zarr)
          ├── .zattrs
-         └── {ROI} (e.g. Whole_Sample / Slice_{SLICE_INDEX} / or arbitrary ROI name)
+         └── {ROI} (e.g. Whole_Sample | Slice_{SLICE_INDEX} | or arbitrary ROI name)
              ├── .zattrs
              ├── Transform
              |   ├── .zarray
