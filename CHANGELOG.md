@@ -2,6 +2,12 @@
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
 
+## [1.2.0] - 2024-08-02
+
+- added reconstruction image schema
+
+[1.2.0]: https://github.com/visor-tech/visor-data-schema/releases/tag/v1.2.0
+
 ## [1.1.0] - 2024-05-18
 
 - updated meta data explanation
