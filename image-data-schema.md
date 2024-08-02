@@ -20,30 +20,28 @@
 
 ## Data Directory Hierarchy
 ```bash
- {SAMPLE_ID}                                      (e.g. BB001)
+ {SAMPLE_ID}                                            (e.g. BB001)
  ├── VISoR_Raw_Images
- |   └── Slice_{SLICE_INDEX}.zarr                 (1-based)
+ |   └── Slice_{SLICE_INDEX}.zarr                       (1-based)
  |       ├── .zattrs
  |       └── Resolution_Level_{RESOLUTION_LEVEL}
- |           └── Stack_{STACK_INDEX}              (0-based)
- |               └── {CHANNEL_ID}                 (e.g. 405nm_10X)
+ |           └── Stack_{STACK_INDEX}                    (0-based)
+ |               └── {CHANNEL_ID}                       (e.g. 405nm_10X)
  |                   ├── .zarray
  |                   ├── {CHUNKS}
  |                   └── ...
  └── VISoR_Reconstructed_Images (optional)
-     └── {VERSION}-{CHANNEL}.zarr                 (e.g. xxx-20240801-405nm_10X.zarr)
-         ├── .zattrs
-         └── {ROI} (e.g. Whole_Sample | Slice_{SLICE_INDEX} | or arbitrary ROI name)
-             ├── .zattrs
-             ├── Transform
-             |   ├── .zarray
-             |   ├── {CHUNKS}
-             |   └── ...
-             └── Image
-                 └── {RESOLUTION}                     (e.g. 1um)
-                     ├── .zarray
-                     ├── {CHUNKS}
-                     └── ...
+     └── {VERSION}                                      ('-' separated identifiers, e.g. xxx-20240801)
+         ├── metadata.json
+         ├── Transform
+         |   └── {SRC_SPACE}_to_{DES_SPACE}.{FILE_EXT}  (e.g. Raw_to_Slice_{SLICE_INDEX}.zarr | Slice_to_Whole_Sample.pth | ...)
+         └── Image (optional)
+             └── {IMAGE_TYPE}                           (e.g. Whole_Sample | Slice_{SLICE_INDEX} | ...)
+                └── {CHANNEL}                           (e.g. 405nm_10X)
+                    └── {RESOLUTION}                    (e.g. 1um)
+                        ├── .zarray
+                        ├── {CHUNKS}
+                        └── ...
 ```
 
 ## Typical values
