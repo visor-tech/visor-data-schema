@@ -37,11 +37,11 @@
          |   └── {SRC_SPACE}_to_{DES_SPACE}.{FILE_EXT}  (e.g. Raw_to_Slice_{SLICE_INDEX}.zarr | Slice_to_Whole_Sample.pth | ...)
          └── Image (optional)
              └── {IMAGE_TYPE}                           (e.g. Whole_Sample | Slice_{SLICE_INDEX} | ...)
-                └── {CHANNEL}                           (e.g. 405nm_10X)
-                    └── {RESOLUTION}                    (e.g. 1um)
-                        ├── .zarray
-                        ├── {CHUNKS}
-                        └── ...
+                 └── {CHANNEL}                          (e.g. 405nm_10X)
+                     └── {RESOLUTION}                   (e.g. 1um)
+                         ├── .zarray
+                         ├── {CHUNKS}
+                         └── ...
 ```
 
 ## Typical values
