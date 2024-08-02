@@ -24,9 +24,9 @@
  ├── VISoR_Raw_Images
  |   └── Slice_{SLICE_INDEX}.zarr                       (1-based)
  |       ├── .zattrs
- |       └── Resolution_Level_{RESOLUTION_LEVEL}
+ |       └── {CHANNEL}                                  (e.g. 405nm_10X)
  |           └── Stack_{STACK_INDEX}                    (0-based)
- |               └── {CHANNEL_ID}                       (e.g. 405nm_10X)
+ |               └── Resolution_Level_{RESOLUTION_LEVEL}
  |                   ├── .zarray
  |                   ├── {CHUNKS}
  |                   └── ...
@@ -50,12 +50,12 @@ Demo code:
 ```python
 f_path = r'Z:\mnt\VISoR_Data_r\zarr\N1779\Slice_006.zarr'
 zg = zarr.open(f_path, mode='r')
-a = zg['Resolution_Level_1']['Stack_1']['640nm_10X']
+a = zg['640nm_10X']['Stack_1']['Resolution_Level_1']
 ```
 
 ||||
 |---|---|---|
-| Number of stacks | 3 | `len(zg['Resolution_Level_1'].keys())` |
+| Number of stacks | 3 | `len(zg['640nm_10X'].keys())` |
 | Stack shape | (1474, 788, 2048) | `a.shape`       |
 | Frame shape | (788, 2048)       | `a[0].shape`    |
 | dtype       | dtype('uint16')   | `a.dtype`       |
