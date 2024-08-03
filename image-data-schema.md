@@ -19,7 +19,7 @@
 [The Paper](https://www.nature.com/articles/s41592-021-01326-w)
 
 ## Data Directory Hierarchy
-```bash
+```
  {SAMPLE_ID}                                            (e.g. BB001)
  ├── VISoR_Raw_Images
  |   └── Slice_{SLICE_INDEX}.zarr                       (1-based)
