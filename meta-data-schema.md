@@ -1,7 +1,7 @@
 # Meta Data Schema
 
 ## Version
-1.3.0
+1.3.1
 
 ## Update Date
 2024-05-18

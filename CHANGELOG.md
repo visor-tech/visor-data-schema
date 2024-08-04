@@ -2,6 +2,13 @@
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
 
+## [1.3.1] - 2024-08-04
+
+- change Stack_INDEX from 0-based to 1-based
+- mark RESOLUTION_LEVEL as 1-based
+
+[1.3.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v1.3.1
+
 ## [1.3.0] - 2024-08-02
 
 - update order of raw image directory hierarchy
