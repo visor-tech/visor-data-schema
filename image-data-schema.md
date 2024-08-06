@@ -1,10 +1,10 @@
 # Image Data Schema
 
 ## Version
-1.3.1
+1.3.2
 
 ## Update Date
-2024-08-04
+2024-08-06
 
 ## Terms
 |||

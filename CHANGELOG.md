@@ -2,6 +2,12 @@
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
 
+## [1.3.2] - 2024-08-06
+
+- defined zarr file location in reconstruction image schema
+
+[1.3.2]: https://github.com/visor-tech/visor-data-schema/releases/tag/v1.3.2
+
 ## [1.3.1] - 2024-08-04
 
 - change Stack_INDEX from 0-based to 1-based
