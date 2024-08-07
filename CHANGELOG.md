@@ -2,6 +2,12 @@
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
 
+## [1.3.3] - 2024-08-07
+
+- use plural (Transforms & Images) in reconstruction image schema
+
+[1.3.3]: https://github.com/visor-tech/visor-data-schema/releases/tag/v1.3.3
+
 ## [1.3.2] - 2024-08-06
 
 - defined zarr file location in reconstruction image schema
