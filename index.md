@@ -5,11 +5,11 @@
 2024-11-01
 
 ## Terms
-|:---------|:---------------------------------------------------------------|
+|---|---|
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
-| `slice`  | Sample slice, may contain multiple 'stacks'                    |
-| `stack`  | A stack of 'frames'                                            |
-| `frame`  | A 2D picture took by microscopy camera                         |
+| `slice`  | Sample slice, may contain multiple 'stacks' |
+| `stack`  | A stack of 'frames' |
+| `frame`  | A 2D picture took by microscopy camera |
 
 ## Data Schema
 ```
@@ -72,29 +72,29 @@
 ```
 
 ## Typical values
-|:-------------------------|:------------------|
-| number of stacks         | 3                 |
-| stack shape              | (1474, 788, 2048) |
-| frame shape              | (788, 2048)       |
-| dtype                    | dtype('uint16')   |
-|:-------------------------|:------------------|
-| chunk Size               | (256, 256, 256)   |
-| default fill pixel value | 0                 |
-| memory order             | 'C'               |
+|---|---|
+| number of stacks | 3 |
+| stack shape | (1474, 788, 2048) |
+| frame shape | (788, 2048) |
+| dtype | dtype('uint16') |
+|---|---|
+| chunk Size | (256, 256, 256) |
+| default fill pixel value | 0 |
+| memory order | 'C' |
 
 ## Metadata
 ### "multiscales"
-algin with "multiscales" in ome-zarr spec v0.4
+align with "multiscales" in ome-zarr spec v0.4
 ### "visor"
-| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE
-|:--------------|:--------------|:------------- |:-------------|:-------------|
+| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
+|---|---|---|---|---|
 | `version` | string | - | the version of schema | 1.1.0 |
 | `update_date` | date | yyyy-mm-dd | the date when version updated | 2024-05-18 |
 | `channels` | list | - | a list of [channel](#channel) specified metadata | - |
 
 #### channel
-| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE
-|:--------------|:--------------|:--------------|:--------------|:--------------|
+| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
+|---|---|---|---|---|
 | `created_time` | date | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
 | `caption` | string | - | {client_id}-{sample_id} | USTC_THY1-YFP_1779 |
 | `wave_length` | string | nanometer | laser wavelength | 488 |
@@ -138,7 +138,6 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
                 {
                     "path": "0",
                     "coordinateTransformations": [{
-                        // the voxel size for the first scale level (1 micrometer)
                         "type": "scale",
                         "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
                     }]
@@ -146,20 +145,17 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
                 {
                     "path": "1",
                     "coordinateTransformations": [{
-                        // the voxel size for the second scale level (downscaled by a factor of 2 -> 2 micrometer)
                         "type": "scale",
                         "scale": [1.0, 1.0, 1.0, 2.0, 2.0]
                     }]
                 }
             ],
             "coordinateTransformations": [{
-                // the voxel size for the first scale level (1 micrometer)
                 "type": "scale",
                 "scale": [1.0, 1.0, 3.5, 1.0, 1.0]
             }],
             "type": "mean",
             "metadata": {
-                "description": "the fields in metadata depend on the downscaling implementation. Here, the parameters passed to the dask function are given",
                 "method": "dask.array.coarsen",
                 "version": "2024.9.1",
                 "args": "[np.mean]",
@@ -216,7 +212,6 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
                 {
                     "path": "0",
                     "coordinateTransformations": [{
-                        // the voxel size for the first scale level (1 micrometer)
                         "type": "scale",
                         "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
                     }]
@@ -224,7 +219,6 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
                 {
                     "path": "1",
                     "coordinateTransformations": [{
-                        // the voxel size for the second scale level (downscaled by a factor of 2 -> 2 micrometer)
                         "type": "scale",
                         "scale": [1.0, 1.0, 2.0, 2.0, 2.0]
                     }]
@@ -232,7 +226,6 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
             ],
             "type": "mean",
             "metadata": {
-                "description": "the fields in metadata depend on the downscaling implementation. Here, the parameters passed to the dask function are given",
                 "method": "dask.array.coarsen",
                 "version": "2024.9.1",
                 "args": "[np.mean]",

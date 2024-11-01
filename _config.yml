@@ -1,2 +1,6 @@
 title: VISoR Data Schema 
 theme: jekyll-theme-primer
+markdown: kramdown
+kramdown:
+  input: GFM
+
