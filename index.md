@@ -5,12 +5,11 @@
 2024-11-01
 
 ## Terms
-|||
-|---|---|
+|:---------|:---------------------------------------------------------------|
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
-| `slice`  | Sample slice, may contain multiple 'stacks' |
-| `stack`  | A stack of 'frames' |
-| `frame`  | A 2D picture took by microscopy camera |
+| `slice`  | Sample slice, may contain multiple 'stacks'                    |
+| `stack`  | A stack of 'frames'                                            |
+| `frame`  | A 2D picture took by microscopy camera                         |
 
 ## Data Schema
 ```
@@ -73,32 +72,29 @@
 ```
 
 ## Typical values
-|||
-|---|---|
-| number of stacks | 3
-| stack shape | (1474, 788, 2048)
-| frame shape | (788, 2048)
-| dtype       | dtype('uint16')
-||||
-| Zarr related  |---
-| chunk Size    | (256, 256, 256)
-| default fill pixel value | 0
-| memory order  | 'C'
-||||
+|:-------------------------|:------------------|
+| number of stacks         | 3                 |
+| stack shape              | (1474, 788, 2048) |
+| frame shape              | (788, 2048)       |
+| dtype                    | dtype('uint16')   |
+|:-------------------------|:------------------|
+| chunk Size               | (256, 256, 256)   |
+| default fill pixel value | 0                 |
+| memory order             | 'C'               |
 
 ## Metadata
 ### "multiscales"
 algin with "multiscales" in ome-zarr spec v0.4
 ### "visor"
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE
-| ------------- | ------------- | ------------- |------------- |------------- |
+|:--------------|:--------------|:------------- |:-------------|:-------------|
 | `version` | string | - | the version of schema | 1.1.0 |
 | `update_date` | date | yyyy-mm-dd | the date when version updated | 2024-05-18 |
 | `channels` | list | - | a list of [channel](#channel) specified metadata | - |
 
 #### channel
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE
-| ------------- | ------------- | ------------- |------------- |------------- |
+|:--------------|:--------------|:--------------|:--------------|:--------------|
 | `created_time` | date | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
 | `caption` | string | - | {client_id}-{sample_id} | USTC_THY1-YFP_1779 |
 | `wave_length` | string | nanometer | laser wavelength | 488 |
@@ -125,7 +121,7 @@ algin with "multiscales" in ome-zarr spec v0.4
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
 Example: visor_raw_images/slice_1.zarr/.zattrs
-```JSON
+```json
 {
     "multiscales": [
         {
@@ -204,7 +200,7 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
 }
 ```
 Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
-```JSON
+```json
 {
     "multiscales": [
         {
