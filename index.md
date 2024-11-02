@@ -5,6 +5,7 @@
 2024-11-01
 
 ## Terms
+|||
 |---|---|
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
 | `slice`  | Sample slice, may contain multiple 'stacks' |
@@ -72,13 +73,13 @@
 ```
 
 ## Typical values
+|||
 |---|---|
 | number of stacks | 3 |
 | stack shape | (1474, 788, 2048) |
 | frame shape | (788, 2048) |
 | dtype | dtype('uint16') |
-|---|---|
-| chunk Size | (256, 256, 256) |
+| chunk size | (256, 256, 256) |
 | default fill pixel value | 0 |
 | memory order | 'C' |
 
