@@ -1,5 +1,6 @@
 ---
 title: "VISoR Data Schema"
+header: false
 ---
 
 # VISoR Data Schema
