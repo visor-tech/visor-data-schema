@@ -118,7 +118,7 @@ align with "multiscales" in OME-Zarr spec v0.4
 | `bottomright_x` | string | - | slice ROI ending coordinate ("bottom-right") x | 24.5047 |
 | `bottomright_y` | string | - | slice ROI ending coordinate ("bottom-right") y | 62.9141 |
 | `bottomright_z` | string | - | slice ROI ending coordinate ("bottom-right") z | 14.2390 |
-| `positions` | list | - | a list of position coordinates in millimeter, index of sublist indicates stack index | [[20.2647, 61.2581], [20.2647, 63.2581]] |
+| `positions` | list | - | a list of position coordinates in millimeter, [[stack_1_topleft_x, stack_1_topleft_y],...,[stack_m_topleft_x, stack_m_topleft_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
 ### "transforms"
