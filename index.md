@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "VISoR Data Schema"
 ---
 
 # VISoR Data Schema
