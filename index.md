@@ -121,11 +121,11 @@ align with "multiscales" in OME-Zarr spec v0.4
 | `positions` | list | - | a list of position coordinates in millimeter, index of sublist indicates stack index | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
-### transforms
+### "transforms"
 #### transform
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
 |---|---|---|---|---|
-| `path` | string | - | absolute path to transform parameter directory | /path/to/transform/ |
+| `path` | string | - | path to transform parameter directory, relative to {SAMPLE_ID} directory | visor_reconstruction_transforms/xxx_brain_20241101/ |
 | `roi_coordinates` | list | same as transform | a list of position coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0,0,0,256,256,256] |
 
 Example: visor_raw_images/slice_1.zarr/.zattrs
@@ -242,8 +242,8 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
         }
     ],
     "transforms": [{
-        "path": "/path/to/transform/",
-        "roi_coordinates": [0,0,0,0,0,0]
+        "path": "visor_reconstruction_transforms/xxx_brain_20241101/",
+        "roi_coordinates": [0,0,0,256,256,256]
     }]
 }
 ```
