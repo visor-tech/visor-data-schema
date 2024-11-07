@@ -21,11 +21,11 @@
  ├── visor_raw_images
  |   |
  |   ├── slice_1.zarr                  # One zarr file per slice
- |   |   ...                           # with slice level metadata
- |   └── slice_m.zarr                  # slice index is 1-based
+ |   |   ...                           # slice index is 1-based
+ |   └── slice_m.zarr
  |       |
  |       ├── .zgroup
- |       ├── .zattrs
+ |       ├── .zattrs                   # slice level metadata
  |       |
  |       ├── 0                         # resolution levels
  |       |   ...
@@ -34,11 +34,11 @@
  |           ├── .zarray
  |           |
  |           └── stack_{STACK_INDEX}   # visor_raw_image specific dimension
- |               |                     # align with "t" in ome-zarr spec v0.4
+ |               |                     # align with "t" in OME-Zarr spec v0.4
  |               |                     # STACK_INDEX is 1-based
  |               |                     # e.g. stack_1
  |               |
- |               └── {CHANNEL}         # align with "c" in ome-zarr spec v0.4
+ |               └── {CHANNEL}         # align with "c" in OME-Zarr spec v0.4
  |                   |                 # e.g. 405nm_10X
  |                   └─ z
  |                      └─ y
@@ -51,15 +51,15 @@
  |   └── {VERSION}.zarr                # version format: {PERSON_ID}_{ROI_ID}_{DATE}
  |       |                             # e.g. xxx_brain_20241101 or xxx_slice_1_20241101
  |       ├── .zgroup
- |       ├── .zattrs
+ |       ├── .zattrs                   # metadata
  |       |
- |       ├── 0                         # Resolution levels
+ |       ├── 0                         # resolution levels
  |       |   ...
  |       └── n
  |           |
  |           ├── .zarray
- |           |                         # note "t" in ome-zarr spec v0.4 is not used
- |           └── {CHANNEL}             # align with "c" in ome-zarr spec v0.4
+ |           |                         # note "t" in OME-Zarr spec v0.4 is not used
+ |           └── {CHANNEL}             # align with "c" in OME-Zarr spec v0.4
  |               |                     # e.g. 405nm_10X
  |               └─ z
  |                  └─ y
@@ -85,18 +85,18 @@
 
 ## Metadata
 ### "multiscales"
-align with "multiscales" in ome-zarr spec v0.4
+align with "multiscales" in OME-Zarr spec v0.4
 ### "visor"
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
 |---|---|---|---|---|
-| `version` | string | - | the version of schema | 1.1.0 |
-| `update_date` | date | yyyy-mm-dd | the date when version updated | 2024-05-18 |
+| `version` | string | - | the version of schema | 2024.11.0 |
+| `version_date` | date | yyyy-mm-dd | the date when version updated | 2024-11-01 |
 | `channels` | list | - | a list of [channel](#channel) specified metadata | - |
 
 #### channel
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
 |---|---|---|---|---|
-| `created_time` | date | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
+| `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
 | `caption` | string | - | {client_id}-{sample_id} | USTC_THY1-YFP_1779 |
 | `wave_length` | string | nanometer | laser wavelength | 488 |
 | `power` | string | milliwatt | laser power | 60 |
@@ -120,6 +120,13 @@ align with "multiscales" in ome-zarr spec v0.4
 | `bottomright_z` | string | - | slice ROI ending coordinate ("bottom-right") z | 14.2390 |
 | `positions` | list | - | a list of position coordinates in millimeter, index of sublist indicates stack index | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
+
+### transforms
+#### transform
+| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
+|---|---|---|---|---|
+| `path` | string | - | absolute path to transform parameter directory | /path/to/transform/ |
+| `roi_coordinates` | list | same as transform | a list of position coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0,0,0,256,256,256] |
 
 Example: visor_raw_images/slice_1.zarr/.zattrs
 ```json
@@ -166,7 +173,7 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
     ],
     "visor": {
         "version": "2024.11.0",
-        "update_date": "2024-11-01",
+        "version_date": "2024-11-01",
         "channels": [{
             "created_time": "2024-05-18T00:00:00Z",
             "caption": "USTC_THY1-YFP_1779",
@@ -233,7 +240,11 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
                 "kwargs": {"multichannel": true}
             }
         }
-    ]
+    ],
+    "transforms": [{
+        "path": "/path/to/transform/",
+        "roi_coordinates": [0,0,0,0,0,0]
+    }]
 }
 ```
 
