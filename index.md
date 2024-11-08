@@ -59,6 +59,8 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |                                 # "icor": illumination correction, e.g. visor_icor_images
  |   |                                 #  ...
  |   |
+ |   ├── .source                       # metadata of the source images
+ |   |
  |   └── ...                           # rest of the directory structure 
  |                                     # should match the corresponding raw images
  |
@@ -128,6 +130,15 @@ list of featured slices, a slice may be imaged several times, use the version in
 | FIELD | EXPLAINATION | EXAMPLE |
 |---|---|---|
 | `path` | path to slice directory, relative to visor_raw_images directory | slice_1_10x.zarr |
+
+### .source
+
+#### "paths"
+if not provided, default to same file name in visor_raw_images
+| FIELD | EXPLAINATION | EXAMPLE |
+|---|---|---|
+| `source` | path to source image, relative to {SAMPLE_ID} directory | visor_raw_images/slice_1_10x.zarr |
+| `result` | path to result image, relative to {SAMPLE_ID} directory | visor_comp_images/slice_1_10x.zarr |
 
 ### .zattr
 
