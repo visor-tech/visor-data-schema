@@ -27,8 +27,10 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |
  |   ├── slice_1_{PARAMETERS}.zarr     # each slice is an independent image (.zarr file)
  |   |                                 # slice index is 1-based
- |   |   ...                           # PARAMETERS format: {MAGNIFICATION}[_{MULTI_ANGLE}]
- |   |                                 # e.g. slice_1_10x | slice_23_40x_4a
+ |   |                                 # PARAMETERS format: {MAGNIFICATION}[_{MULTI_ANGLE}]
+ |   |   ...                           # e.g. slice_1_10x
+ |   |                                 # e.g. slice_23_40x_4a90, 4a90 means the 90 degree of 4-angle imaging
+ |   |
  |   └── slice_m_{PARAMETERS}.zarr
  |       |
  |       ├── .zgroup
@@ -157,7 +159,7 @@ microscope and imaging settings
 |---|---|---|---|---|
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
 | `caption` | string | - | {client_id}-{sample_id} | USTC_THY1-YFP_1779 |
-| `wave_length` | string | nanometer | laser wavelength | 488 |
+| `wavelength` | string | nanometer | laser wavelength | 488 |
 | `power` | string | milliwatt | laser power | 60 |
 | `filter` | string | nanometer/nanometer |optical filter info, central wavelength /  bandwidth, for example, 520/40 presents 520nm±(40/2)nm i.e. 500-540nm | 520/40 |
 | `exposure` | string | milliseconds | exposure time | 4 |
