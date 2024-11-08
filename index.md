@@ -173,6 +173,7 @@ microscope and imaging settings
 | `slides_index` | string | - | slide index | 1 |
 | `image_size` | string | pixel | width x height | 2048x788 |
 | `pixel_size` | string | micrometer/pixel | micrometer per pixel | 1.03 |
+| `slice_roi_coords` | list | physical slice roi coordinates, [topleft_x, topleft_y, topleft_z, bottomright_x, bottomright_y, bottomright_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
 | `stack_positions` | list | millimeter | a list of stack position coordinates in millimeter, [[stack_1_topleft_x, stack_1_topleft_y],...,[stack_m_topleft_x, stack_m_topleft_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
