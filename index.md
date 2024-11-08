@@ -1,18 +1,13 @@
----
-title: "VISoR Data Schema"
-header: false
----
-
-# VISoR Data Schema
+This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html).
 
 ## Version
 2024.11.0
 
-## Update Date
+## Version Date
 2024-11-01
 
 ## Terms
-|||
+| TERM | DEFINITION |
 |---|---|
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
 | `slice`  | Sample slice, may contain multiple 'stacks' |
@@ -21,15 +16,20 @@ header: false
 
 ## Data Schema
 ```
-{SAMPLE_ID}                            # Top level container directory of a sample
+{SAMPLE_ID}                            # container directory of a sample
  |                                     # each mode has a subdirectory
- |                                     # SAMPLE_ID e.g. BB001
+ |                                     # we only define visor_ image schema in this spec
+ |                                     # SAMPLE_ID example: BB001
  |
  ├── visor_raw_images
  |   |
- |   ├── slice_1.zarr                  # One zarr file per slice
- |   |   ...                           # slice index is 1-based
- |   └── slice_m.zarr
+ |   ├── .visor                        # sample level metadata
+ |   |
+ |   ├── slice_1_{PARAMETERS}.zarr     # each slice is an independent image (.zarr file)
+ |   |                                 # slice index is 1-based
+ |   |   ...                           # PARAMETERS format: {MAGNIFICATION}[_{MULTI_ANGLE}]
+ |   |                                 # e.g. slice_1_10x | slice_23_40x_4a
+ |   └── slice_m_{PARAMETERS}.zarr
  |       |
  |       ├── .zgroup
  |       ├── .zattrs                   # slice level metadata
@@ -46,17 +46,28 @@ header: false
  |               |                     # e.g. stack_1
  |               |
  |               └── {CHANNEL}         # align with "c" in OME-Zarr spec v0.4
- |                   |                 # e.g. 405nm_10X
- |                   └─ z
+ |                   |                 # e.g. 405
+ |                   |
+ |                   └─ z              # "z" indicates frame number
  |                      └─ y
  |                         └─ x
  |
  |
- |
- ├── visor_reconstructed_images        # optional
+ ├── [visor_{PROCESS_TYPE}_images]     # optional, processed images
+ |   |                                 # PROCESS_TYPE definitions:
+ |   |                                 # "comp": compression, e.g. visor_comp_images
+ |   |                                 # "icor": illumination correction, e.g. visor_icor_images
+ |   |                                 #  ...
  |   |
- |   └── {VERSION}.zarr                # version format: {PERSON_ID}_{ROI_ID}_{DATE}
- |       |                             # e.g. xxx_brain_20241101 or xxx_slice_1_20241101
+ |   └── ...                           # rest of the directory structure 
+ |                                     # should match the corresponding raw images
+ |
+ |
+ ├── [visor_recon_images]              # optional, reconstructed images
+ |   |
+ |   └── {VERSION}.zarr                # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
+ |       |                             # e.g. xxx_brain_10x_20241101
+ |       |                             # e.g. xxx_slice_1_40x_icor_20241101
  |       ├── .zgroup
  |       ├── .zattrs                   # metadata
  |       |
@@ -65,22 +76,27 @@ header: false
  |       └── n
  |           |
  |           ├── .zarray
+ |           |
  |           |                         # note "t" in OME-Zarr spec v0.4 is not used
+ |           |
  |           └── {CHANNEL}             # align with "c" in OME-Zarr spec v0.4
- |               |                     # e.g. 405nm_10X
+ |               |                     # e.g. 405
+ |               |
  |               └─ z
  |                  └─ y
  |                     └─ x
  |
  |
- └── visor_reconstruction_transforms   # optional
+ └── [visor_recon_transforms]          # optional, reconstruction transforms
      |
-     └── {VERSION}                     # version format: {PERSON_ID}_{ROI_ID}_{DATE}
-                                       # e.g. xxx_brain_20241101 or xxx_slice_1_20241101
+     └── {VERSION}                     # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
+                                       # e.g. xxx_brain_10x_20241101
+                                       # e.g. xxx_slice_1_40x_icor_20241101
 ```
 
 ## Typical values
-|||
+
+| DESCRIPTION | VALUE |
 |---|---|
 | number of stacks | 3 |
 | stack shape | (1474, 788, 2048) |
@@ -91,16 +107,41 @@ header: false
 | memory order | 'C' |
 
 ## Metadata
-### "multiscales"
+
+### .visor
+
+#### "project_info"
+information of the project
+| FIELD | EXPLAINATION | EXAMPLE |
+|---|---|---|
+| `animal_id` | id of animal | T070 |
+| `date` | date of imaging, format: yyyymmdd | 20240811 |
+| `hardware_name` | name of microscope | VISoR19 |
+| `personnel` | name initials of the microscopist | YY |
+| `project_name` | name of project | BCP |
+| `software_name` | name of imaging control software | fastLSM-2.8.7.exe |
+| `species` | species | Mouse |
+| `subproject_name` | name of subproject | HSYN-EGFP-1E7-3W |
+
+#### "featured_slices"
+list of featured slices, a slice may be imaged several times, use the version in this list is recommended
+| FIELD | EXPLAINATION | EXAMPLE |
+|---|---|---|
+| `path` | path to slice directory, relative to visor_raw_images directory | slice_1_10x.zarr |
+
+### .zattr
+
+#### "multiscales"
 align with "multiscales" in OME-Zarr spec v0.4
-### "visor"
+
+#### "visor"
+microscope and imaging settings
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
 |---|---|---|---|---|
 | `version` | string | - | the version of schema | 2024.11.0 |
 | `version_date` | date | yyyy-mm-dd | the date when version updated | 2024-11-01 |
 | `channels` | list | - | a list of [channel](#channel) specified metadata | - |
-
-#### channel
+##### channel
 | FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
 |---|---|---|---|---|
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | 2024-05-18T00:00:00Z |
@@ -119,29 +160,51 @@ align with "multiscales" in OME-Zarr spec v0.4
 | `slides_index` | string | - | slide index | 1 |
 | `image_size` | string | pixel | width x height | 2048x788 |
 | `pixel_size` | string | micrometer/pixel | micrometer per pixel | 1.03 |
-| `topleft_x` | string | - | slice ROI starting coordinate ("top-left") x | 20.2647 |
-| `topleft_y` | string | - | slice ROI starting coordinate ("top-left") y | 61.2581 |
-| `topleft_z` | string | - | slice ROI starting coordinate ("top-left") z | 14.2395 |
-| `bottomright_x` | string | - | slice ROI ending coordinate ("bottom-right") x | 24.5047 |
-| `bottomright_y` | string | - | slice ROI ending coordinate ("bottom-right") y | 62.9141 |
-| `bottomright_z` | string | - | slice ROI ending coordinate ("bottom-right") z | 14.2390 |
-| `positions` | list | - | a list of position coordinates in millimeter, [[stack_1_topleft_x, stack_1_topleft_y],...,[stack_m_topleft_x, stack_m_topleft_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
+| `stack_positions` | list | millimeter | a list of stack position coordinates in millimeter, [[stack_1_topleft_x, stack_1_topleft_y],...,[stack_m_topleft_x, stack_m_topleft_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
-### "transforms"
-#### transform
-| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
-|---|---|---|---|---|
-| `path` | string | - | path to transform parameter directory, relative to {SAMPLE_ID} directory | visor_reconstruction_transforms/xxx_brain_20241101/ |
-| `roi_coordinates` | list | same as transform | a list of position coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0,0,0,256,256,256] |
+#### "transforms"
+reconstruction transforms
+##### transform
+| FIELD | EXPLAINATION | EXAMPLE |
+|---|---|---|
+| `path` | path to transform parameter directory, relative to {SAMPLE_ID} directory | visor_recon_transforms/xxx_brain_10x_20241101/ |
+| `roi_coordinates` | a list of position coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0,0,0,256,256,256] |
 
-Example: visor_raw_images/slice_1.zarr/.zattrs
+## Metadata Examples
+
+Example: visor_raw_images/.visor
+```json
+{
+    "project_info": {
+        "animal_id": "T070",
+        "date": "20240811",
+        "hardware_name": "VISoR19",
+        "personnel": "YY",
+        "project_name": "BCP",
+        "software_name": "fastLSM-2.8.7.exe",
+        "species": "Mouse",
+        "subproject_name": "HSYN-EGFP-1E7-3W"
+    },  
+    "featured_slices": [
+        {
+            "path": "slice_1_10x.zarr"
+        },
+        ...
+        {
+            "path": "slice_23_40x.zarr"
+        }
+    ]
+}
+```
+
+Example: visor_raw_images/slice_1_10x.zarr/.zattrs
 ```json
 {
     "multiscales": [
         {
             "version": "0.4",
-            "name": "slice_1",
+            "name": "slice_1_10x",
             "axes": [
                 {"name": "t", "type": "visor_stack"},
                 {"name": "c", "type": "channel"},
@@ -164,6 +227,7 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
                         "scale": [1.0, 1.0, 1.0, 2.0, 2.0]
                     }]
                 }
+                ...
             ],
             "coordinateTransformations": [{
                 "type": "scale",
@@ -210,7 +274,8 @@ Example: visor_raw_images/slice_1.zarr/.zattrs
     }
 }
 ```
-Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
+
+Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
 ```json
 {
     "multiscales": [
@@ -238,6 +303,7 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
                         "scale": [1.0, 1.0, 2.0, 2.0, 2.0]
                     }]
                 }
+                ...
             ],
             "type": "mean",
             "metadata": {
@@ -249,13 +315,14 @@ Example: visor_reconstructed_images/xxx_slice_1_20241101.zarr/.zattrs
         }
     ],
     "transforms": [{
-        "path": "visor_reconstruction_transforms/xxx_brain_20241101/",
+        "path": "visor_recon_transforms/xxx_brain_20241101/",
         "roi_coordinates": [0,0,0,256,256,256]
     }]
 }
 ```
 
 ## References
+
 [Ome NGFF Spec](https://ngff.openmicroscopy.org/latest/)
 
 [Zarr Spec](https://zarr-specs.readthedocs.io/en/latest/specs.html)
