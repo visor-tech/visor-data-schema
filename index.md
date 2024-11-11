@@ -27,9 +27,10 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |
  |   ├── slice_1_{PARAMETERS}.zarr     # each slice is an independent image (.zarr file)
  |   |                                 # slice index is 1-based
- |   |                                 # PARAMETERS format: {MAGNIFICATION}[_{MULTI_ANGLE}]
+ |   |                                 # PARAMETERS format: {MAGNIFICATION}[_{MULTI_ANGLE}][_{VERSION}]
  |   |   ...                           # e.g. slice_1_10x
- |   |                                 # e.g. slice_23_40x_4a90, 4a90 means the 90 degree of 4-angle imaging
+ |   |                                 # e.g. slice_23_40x_4a90, _4a90 means the 90 degree of 4-angle imaging
+ |   |                                 # e.g. slice_23_40x_1, _1 is a version indicator, typically an integer
  |   |
  |   └── slice_m_{PARAMETERS}.zarr
  |       |
@@ -61,7 +62,7 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |                                 # "icor": illumination correction, e.g. visor_icor_images
  |   |                                 #  ...
  |   |
- |   ├── .source                       # metadata of the source images
+ |   ├── .source                       # metadata, see below
  |   |
  |   └── ...                           # rest of the directory structure 
  |                                     # should match the corresponding raw images
@@ -173,8 +174,8 @@ microscope and imaging settings
 | `slides_index` | string | - | slide index | 1 |
 | `image_size` | string | pixel | width x height | 2048x788 |
 | `pixel_size` | string | micrometer/pixel | micrometer per pixel | 1.03 |
-| `slice_roi_coords` | list | physical slice roi coordinates, [topleft_x, topleft_y, topleft_z, bottomright_x, bottomright_y, bottomright_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
-| `stack_positions` | list | millimeter | a list of stack position coordinates in millimeter, [[stack_1_topleft_x, stack_1_topleft_y],...,[stack_m_topleft_x, stack_m_topleft_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
+| `slice_roi` | list | physical slice roi coordinates, [top_left_x, top_left_y, top_left_z, bottom_right_x, bottom_right_y, bottom_right_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
+| `stack_positions` | list | millimeter | a list of stack position coordinates in millimeter, [[stack_1_top_left_x, stack_1_top_left_y],...,[stack_m_top_left_x, stack_m_top_left_y]] | [[20.2647, 61.2581], [20.2647, 63.2581]] |
 | `version` | string | - | version of microscope control software | 2.8.7 |
 
 #### "transforms"
@@ -276,16 +277,19 @@ Example: visor_raw_images/slice_1_10x.zarr/.zattrs
             "slides_index": "1",
             "image_size": "2048x788",
             "pixel_size": "1.03",
-            "topleft_x": "20.2647",
-            "topleft_y": "61.2581",
-            "topleft_z": "14.2395",
-            "bottomright_x": "24.5047",
-            "bottomright_y": "62.9141",
-            "bottomright_z": "14.2390",
-            "positions": [[20.2647, 61.2581],[20.2647, 63.2581]],
+            "slice_roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
+            "stack_positions": [[20.2647, 61.2581],[20.2647, 63.2581]],
             "version": "2.8.7"
         }]
     }
+}
+```
+
+Example: visor_comp_images/slice_1_10x.zarr/.source
+```json
+{
+    "source": "visor_raw_images/slice_1_10x.zarr",
+    "result": "visor_comp_images/slice_1_10x.zarr"
 }
 ```
 
