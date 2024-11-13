@@ -125,7 +125,7 @@ Information of the project
 A list of featured slices, a slice may be imaged several times, use the version in this list is recommended.
 | FIELD | EXPLAINATION | EXAMPLE |
 |---|---|---|
-| `path` | path to slice directory, relative to visor_raw_images directory | slice_1_10x.zarr |
+| `path` | path to slice directory, relative to visor_raw_images directory | "slice_1_10x.zarr" |
 
 ### ".zattr"
 
