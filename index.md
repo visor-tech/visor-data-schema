@@ -174,7 +174,7 @@ A list of wavelength channels with corresponding axis index mappings.
 A list of reconstruction transforms.
 | FIELD | TYPE | EXPLAINATION | EXAMPLE |
 |---|---|---|---|
-| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID} directory | visor_recon_transforms/xxx_brain_10x_20241101/ |
+| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID} directory | "visor_recon_transforms/xxx_brain_10x_20241101" |
 | `roi` | list[float] | 3D roi coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0.0,0.0,0.0,256.0,256.0,256.0] |
 
 ### Examples
