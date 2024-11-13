@@ -316,7 +316,7 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
         }
     ],
     "transforms": [{
-        "path": "visor_recon_transforms/xxx_brain_20241101/",
+        "path": "visor_recon_transforms/xxx_brain_20241101",
         "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
     }]
 }
