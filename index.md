@@ -69,7 +69,7 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |           |
  |           ├── .zarray
  |           |
- |           └── s                     # "s" is optional; for example, the "stack" is no longer present after reconstruction
+ |           └── s                     # "s" is optional; for example, "stacks" are no longer present after reconstruction
  |               └─ c                  # "c" is wavelength channel, see "channels" metadata
  |                  └─ z               # "z" is frame number
  |                     └─ y
