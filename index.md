@@ -96,7 +96,7 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 ||| [.zattr](#zattr) |
 ||| [.visor](#visor) |
 
-### Fields comparision with OME-Zarr spec v0.4
+### Fields comparison with OME-Zarr spec v0.4
 | File | OME-Zarr v0.4 | VISoR |
 |---|---|---|
 | .zattr | [multiscales](https://ngff.openmicroscopy.org/0.4/index.html#multiscale-md) | [multiscales](#multiscales) |
