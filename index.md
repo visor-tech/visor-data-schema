@@ -170,7 +170,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
 | `v_schema` | string | - | the version of schema | "2024.11.2" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
-| `personnel` | name initials of the microscopist | "YY" |
+| `personnel` | string | - ｜ name initials of the microscopist | "YY" |
 
 #### transforms
 A list of reconstruction transforms.
