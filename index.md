@@ -100,12 +100,12 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 | File | OME-Zarr v0.4 | VISoR |
 |---|---|---|
 | .zattr | [multiscales](https://ngff.openmicroscopy.org/0.4/index.html#multiscale-md) | [multiscales](#multiscales) |
-|| - | [visor_stacks](#visor_stacks) |
+|| - | [visor_stacks](#visorstacks) |
 || - | [channels](#channels) |
 || - | [transforms](#transforms) |
-| .visor | - | [project_info](#project_info) |
-|| - | [featured_slices](#featured_slices) |
-|| - | [source_image](#source_image) |
+| .visor | - | [project_info](#projectinfo) |
+|| - | [featured_slices](#featuredslices) |
+|| - | [source_image](#sourceimage) |
 
 ### ".visor"
 
