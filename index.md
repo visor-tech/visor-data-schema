@@ -105,6 +105,7 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 || - | [transforms](#transforms) |
 | .visor | - | [project_info](#project_info) |
 || - | [featured_slices](#featured_slices) |
+|| - | [source_image](#source_image) |
 
 ### ".visor"
 
@@ -126,6 +127,12 @@ A list of featured slices, a slice may be imaged several times, use the version 
 | FIELD | EXPLAINATION | EXAMPLE |
 |---|---|---|
 | `path` | path to slice directory, relative to visor_raw_images directory | "slice_1_10x.zarr" |
+
+#### source_image
+Information about the source image on which the current process is based.
+| FIELD | EXPLAINATION | EXAMPLE |
+|---|---|---|
+| `path` | path to source image directory, relative to {SAMPLE_ID} directory | "visor_icorr_images/slice_1_10x.zarr" |
 
 ### ".zattr"
 
@@ -319,6 +326,15 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
         "path": "visor_recon_transforms/xxx_brain_20241101",
         "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
     }]
+}
+```
+
+Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.visor
+```json
+{
+    "source_image": {
+        "path": "visor_icorr_images/xxx_brain_40x_20241012.zarr"
+    }
 }
 ```
 
