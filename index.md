@@ -90,11 +90,11 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 ### Structure Overview
 | SUBDIRECTORY | SAMPLE LEVEL | ROI/SLICE LEVEL |
 |---|---|---|
-| visor_raw_images | [.visor](#visor) ||
-||| [.zattr](#zattr) |
+| visor_raw_images | [.visor](#quotvisorquot) ||
+||| [.zattr](#quotzattrquot) |
 | visor_{PROCESS_TYPE}_images |||
-||| [.zattr](#zattr) |
-||| [.visor](#visor) |
+||| [.zattr](#quotzattrquot) |
+||| [.visor](#quotvisorquot) |
 
 ### Fields comparison with OME-Zarr spec v0.4
 | File | OME-Zarr v0.4 | VISoR |
