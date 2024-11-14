@@ -4,7 +4,7 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
 2024.11.2
 
 ## Version Date
-2024-11-13
+2024-11-14
 
 ## Terms
 | TERM | DEFINITION |
@@ -81,7 +81,7 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
      |
      └── {VERSION}                     # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
                                        # e.g. xxx_brain_10x_20241101
-                                       # e.g. xxx_slice_1_40x_icor_20241101
+                                       # e.g. xxx_slice_1_40x_icorr_20241101
 ```
 
 ## Metadata
