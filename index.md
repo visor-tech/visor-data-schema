@@ -152,8 +152,8 @@ A list of wavelength channels with corresponding axis index mappings.
 |---|---|---|---|---|
 | `index` | int | - | channel axis index | 0 |
 | `wavelength` | string | nanometer | laser wavelength | "488" |
-| `slice_id` | int | - | slice id | 3 |
-| `slide_id` | int | - | slide id | 1 |
+| `slice_index` | int | - | slice index | 3 |
+| `slide_index` | int | - | slide index | 1 |
 | `hardware_id` | string | name of microscope | "VISoR19" |
 | `power` | float | milliwatt | laser power | 60.0 |
 | `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 presents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
