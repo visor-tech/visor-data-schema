@@ -54,6 +54,7 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |                                 # "recon": reconstruction, i.e. visor_recon_images
  |   |                                 # "compr": compression, i.e. visor_compr_images
  |   |                                 # "icorr": illumination correction, i.e. visor_icorr_images
+ |   |                                 # "projn": projection, i.e. visor_projn_images
  |   |                                 #  ...
  |   |
  |   └── {VERSION}.zarr                # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
