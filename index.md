@@ -33,8 +33,8 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   |
  |   └── slice_m_{PARAMETERS}.zarr
  |       |
- |       ├── .zgroup
  |       ├── .zattrs                   # OME-Zarr compatible slice level metadata
+ |       ├── .zgroup
  |       |
  |       ├── 0                         # resolution levels
  |       |   ...
@@ -59,9 +59,10 @@ This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.
  |   └── {VERSION}.zarr                # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
  |       |                             # e.g. xx_brain_10x_20241101
  |       |                             # e.g. xxx_slice_1_40x_icorr_20241101
- |       ├── .zgroup
+ |       |
+ |       ├── .visor                    # metadata contains source images
  |       ├── .zattrs                   # roi level metadata
- |       ├── .visor                    # copy from the corresponding version of visor_raw_images
+ |       ├── .zgroup
  |       |
  |       ├── 0                         # resolution levels
  |       |   ...
@@ -104,8 +105,7 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 || - | [channels](#channels) |
 || - | [transforms](#transforms) |
 | .visor | - | [project_info](#projectinfo) |
-|| - | [featured_slices](#featuredslices) |
-|| - | [source_image](#sourceimage) |
+|| - | [selected_images](#selectedimages) |
 
 ### ".visor"
 
@@ -114,25 +114,18 @@ Information of the project
 | FIELD | EXPLAINATION | EXAMPLE |
 |---|---|---|
 | `animal_id` | id of animal | "T070" |
-| `date` | date of imaging, format: yyyymmdd | "20240811" |
-| `hardware_name` | name of microscope | "VISoR19" |
-| `personnel` | name initials of the microscopist | "YY" |
 | `project_name` | name of project | "BCP" |
-| `software_name` | name of imaging control software | "fastLSM-2.8.7.exe" |
 | `species` | species | "Mouse" |
 | `subproject_name` | name of subproject | "HSYN-EGFP-1E7-3W" |
 
-#### featured_slices
-A list of featured slices, a slice may be imaged several times, use the version in this list is recommended.
-| FIELD | EXPLAINATION | EXAMPLE |
-|---|---|---|
-| `path` | path to slice directory, relative to visor_raw_images directory | "slice_1_10x.zarr" |
+#### selected_images
+A list of selected images.
+- For raw images, a slice may be imaged several times, use the version in this list is recommended
+- For processed images, this is the source images on which the current process is based.
 
-#### source_image
-Information about the source image on which the current process is based.
 | FIELD | EXPLAINATION | EXAMPLE |
 |---|---|---|
-| `path` | path to source image directory, relative to {SAMPLE_ID} directory | "visor_icorr_images/slice_1_10x.zarr" |
+| `path` | path to image directory, relative to {SAMPLE_ID} directory | "visor_icorr_images/slice_1_10x.zarr" |
 
 ### ".zattr"
 
@@ -161,6 +154,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `wavelength` | string | nanometer | laser wavelength | "488" |
 | `slice_id` | int | - | slice id | 3 |
 | `slide_id` | int | - | slide id | 1 |
+| `hardware_id` | string | name of microscope | "VISoR19" |
 | `power` | float | milliwatt | laser power | 60.0 |
 | `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 presents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
 | `exposure` | float | milliseconds | exposure time | 4.0 |
@@ -176,6 +170,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
 | `v_schema` | string | - | the version of schema | "2024.11.2" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
+| `personnel` | name initials of the microscopist | "YY" |
 
 #### transforms
 A list of reconstruction transforms.
@@ -191,21 +186,43 @@ Example: visor_raw_images/.visor
 {
     "project_info": {
         "animal_id": "T070",
-        "date": "20240811",
-        "hardware_name": "VISoR19",
-        "personnel": "YY",
         "project_name": "BCP",
-        "software_name": "fastLSM-2.8.7.exe",
         "species": "Mouse",
         "subproject_name": "HSYN-EGFP-1E7-3W"
     },  
-    "featured_slices": [
+    "selected_images": [
         {
-            "path": "slice_1_10x.zarr"
+            "path": "visor_raw_images/slice_1_10x.zarr"
         },
         ...
         {
-            "path": "slice_23_40x.zarr"
+            "path": "visor_raw_images/slice_23_40x.zarr"
+        }
+    ]
+}
+```
+
+Example: visor_recon_images/xxx_slice_1_40x_20241101.zarr/.visor
+```json
+{
+    "selected_images": [
+        {
+            "path": "visor_icorr_images/xxx_slice_1_40x_20241012.zarr"
+        }
+    ]
+}
+```
+
+Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.visor
+```json
+{
+    "selected_images": [
+        {
+            "path": "visor_raw_images/slice_1_10x.zarr"
+        },
+        ...
+        {
+            "path": "visor_raw_images/slice_23_40x.zarr"
         }
     ]
 }
@@ -264,6 +281,7 @@ Example: visor_raw_images/slice_1_10x.zarr/.zattrs
         "wavelength": "488",
         "slice_id": 3,
         "slide_id": 1,
+        "hardware_id": "VISoR19",
         "power": 60.0,
         "filter": "520/40",
         "exposure": 4.0,
@@ -278,7 +296,8 @@ Example: visor_raw_images/slice_1_10x.zarr/.zattrs
         "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
         "v_software": "2.8.7",
         "v_schema": "2024.11.2",
-        "created_time": "2024-11-12T00:00:00Z"
+        "created_time": "2024-11-12T00:00:00Z",
+        "personnel": "YY"
     }]
 }
 ```
@@ -326,15 +345,6 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
         "path": "visor_recon_transforms/xxx_brain_20241101",
         "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
     }]
-}
-```
-
-Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.visor
-```json
-{
-    "source_image": {
-        "path": "visor_icorr_images/xxx_brain_40x_20241012.zarr"
-    }
 }
 ```
 
