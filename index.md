@@ -1,4 +1,4 @@
-This is the image data schema of VISoR technology, align with [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html).
+This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html).
 
 ## Version
 2024.11.2
@@ -280,8 +280,8 @@ Example: visor_raw_images/slice_1_10x.zarr/.zattrs
     "channels": [{
         "index": 0,
         "wavelength": "488",
-        "slice_id": 3,
-        "slide_id": 1,
+        "slice_index": 3,
+        "slide_index": 1,
         "hardware_id": "VISoR19",
         "power": 60.0,
         "filter": "520/40",
