@@ -16,7 +16,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 
 ## Data Schema
 ```
-{SAMPLE_ID}.vsr                        # .vsr extension for VISoR image type
+{SAMPLE_ID}.vsr                        # use .vsr extension for VISoR image type
  |                                     # each subtype/mode is organized into its own subdirectory
  |                                     # we only define visor_ images schema in this spec
  |                                     # file name example: BB001.vsr
