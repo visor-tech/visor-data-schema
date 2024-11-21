@@ -142,8 +142,8 @@ A list of VISoR stacks with corresponding axis index mappings.
 
 #### channels
 A list of wavelength channels with corresponding axis index mappings.
-- Axis indices are 0-based and increment sequentially;
-- The order of channels is not guaranteed.
+- Axis indices are 0-based and increment sequentially
+- The order of channels is not guaranteed
 
 | FIELD | TYPE | UNIT | DESCRIPTION | EXAMPLE |
 |---|---|---|---|---|
