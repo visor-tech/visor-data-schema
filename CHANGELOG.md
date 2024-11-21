@@ -8,6 +8,7 @@
 - new visor_raw_images/.reg metadata file contains registered slices
 - moved source image pathes to .zattrs['sources']
 - removed .visor metadata file
+- updated LICENSE to BSD 3-Clause License
 
 [v2024.11.3]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2024.11.3
 
