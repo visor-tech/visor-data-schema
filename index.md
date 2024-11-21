@@ -21,11 +21,11 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |                                     # we only define visor_ images schema in this spec
  |                                     # file name example: BB001.vsr
  |
- ├── .smp                              # sample metadata, see ".smp"
+ ├── info.json                         # sample info metadata, see "info.json"
  |
  ├── visor_raw_images
  |   |
- |   ├── .reg                          # raw images specific metadata, see ".reg"
+ |   ├── selected.json                 # selected raw images metadata, see "selected.json"
  |   |
  |   ├── slice_1_{PARAMETERS}.zarr     # each slice is an independent image (.zarr file)
  |   |                                 # slice index is 1-based
@@ -94,8 +94,8 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 ### Structure Overview
 | DIRECTORY | SAMPLE LEVEL | ROI LEVEL |
 |---|---|---|
-| {SAMPLE_ID}.vsr | [.smp](#quotsmpquot) ||
-| {SAMPLE_ID}.vsr/visor_raw_images | [.reg](#quotregquot) | [.zattrs](#quotzattrsquot) |
+| {SAMPLE_ID}.vsr | [info.json](#quotinfojsonquot) ||
+| {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [.zattrs](#quotzattrsquot) |
 | {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [.zattrs](#quotzattrsquot) |
 
 ### Fields comparison with OME-Zarr spec v0.4
@@ -106,10 +106,10 @@ Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.o
 || - | [channels](#channels) |
 || - | [sources](#sources) |
 || - | [transforms](#transforms) |
-| .smp | - | [.smp](#quotsmpquot) |
-| .reg | - | [.reg](#quotregquot) |
+| info.json | - | [info.json](#quotinfojsonquot) |
+| selected.json | - | [selected.json](#quotselectedjsonquot) |
 
-### ".smp"
+### "info.json"
 Information of the `sample`.
 | FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
@@ -118,11 +118,12 @@ Information of the `sample`.
 | `species` | species | "Mouse" |
 | `subproject_name` | name of subproject | "HSYN-EGFP-1E7-3W" |
 
-### ".reg"
-A list of registered slices. For raw images, a slice may be imaged multiple times; it is recommended to use the registered version listed here.
+### "selected.json"
+A list of selected slices and channels. For raw images, a slice, or a channel, may be imaged multiple times; it is recommended to use the selected version listed here.
 | FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
-| `path` | path to image directory, relative to {SAMPLE_ID}.vsr directory | "visor_icorr_images/slice_1_10x.zarr" |
+| `path` | path to slice zarr file, relative to visor_raw_images directory | "slice_1_10x.zarr" |
+| `channels` | list of wavelength channels | ["488","561"] |
 
 ### ".zattrs"
 
@@ -174,6 +175,7 @@ A list of source images, on which the current process is based.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
 | `path` | string | path to source image directory, relative to {SAMPLE_ID}.vsr directory | "visor_raw_images/slice_1_10x.zarr" |
+| `channels` | list[string] | list of wavelength channels | ["488","561"] |
 
 #### transforms
 A list of reconstruction transforms.
@@ -184,7 +186,7 @@ A list of reconstruction transforms.
 
 ### Examples
 
-Example: .smp
+Example: info.json
 ```json
 {
     "animal_id": "T070",
@@ -194,19 +196,23 @@ Example: .smp
 }
 ```
 
-Example: visor_raw_images/.reg
+Example: visor_raw_images/selected.json
 ```json
-{
-    "registered_slices": [
-        {
-            "path": "visor_raw_images/slice_1_10x.zarr"
-        },
-        ...
-        {
-            "path": "visor_raw_images/slice_23_40x.zarr"
-        }
-    ]
-}
+[
+    {
+        "path": "slice_1_10x.zarr",
+        "channels": ["488","561"]
+    },
+    {
+        "path": "slice_1_10x_1.zarr",
+        "channels": ["405","640"]
+    },
+    ...
+    {
+        "path": "slice_23_40x.zarr",
+        "channels": ["405","488","561","640"]
+    }
+]
 ```
 
 Example: visor_raw_images/slice_1_10x.zarr/.zattrs
@@ -348,7 +354,8 @@ Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/.zattrs
     ],
     "sources": [
         {
-            "path": "visor_raw_images/slice_1_10x.zarr"
+            "path": "visor_icorr_images/slice_1_10x.zarr",
+            "channels": ["488","561"]
         }
     ]
 }
@@ -405,11 +412,17 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
     ],
     "sources": [
         {
-            "path": "visor_raw_images/slice_1_10x.zarr"
+            "path": "visor_raw_images/slice_1_40x.zarr",
+            "channels": ["488"]
+        },
+        {
+            "path": "visor_raw_images/slice_1_40x_1.zarr",
+            "channels": ["561"]
         },
         ...
         {
-            "path": "visor_raw_images/slice_23_40x.zarr"
+            "path": "visor_raw_images/slice_23_40x.zarr",
+            "channels": ["488","561"]
         }
     ],
     "transforms": [{

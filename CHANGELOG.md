@@ -4,9 +4,9 @@
 ## [v2024.11.3]
 
 - use .vsr extension for VISoR image type
-- new .smp metadata file contains sample info
-- new visor_raw_images/.reg metadata file contains registered slices
-- moved source image pathes to .zattrs['sources']
+- new info.json metadata file contains sample info
+- new visor_raw_images/selected.json metadata file contains selected slices and channels
+- moved source images to .zattrs['sources']
 - removed .visor metadata file
 - updated LICENSE to BSD 3-Clause License
 
