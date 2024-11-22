@@ -1,10 +1,10 @@
 This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html).
 
 ## Version
-2024.11.2
+2024.11.3
 
 ## Version Date
-2024-11-14
+2024-11-21
 
 ## Terms
 | TERM | DEFINITION |
@@ -16,13 +16,16 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 
 ## Data Schema
 ```
-{SAMPLE_ID}                            # sample directory, each mode is organized into its own subdirectory
- |                                     # we only define visor_ image schema in this spec
- |                                     # SAMPLE_ID example: BB001
+{SAMPLE_ID}.vsr                        # use .vsr extension for VISoR image type
+ |                                     # each subtype/mode is organized into its own subdirectory
+ |                                     # we only define visor_ images schema in this spec
+ |                                     # file name example: BB001.vsr
+ |
+ ├── info.json                         # sample info metadata, see "info.json"
  |
  ├── visor_raw_images
  |   |
- |   ├── .visor                        # VISoR specific sample level metadata, see ".visor" metadata
+ |   ├── selected.json                 # selected raw images metadata, see "selected.json"
  |   |
  |   ├── slice_1_{PARAMETERS}.zarr     # each slice is an independent image (.zarr file)
  |   |                                 # slice index is 1-based
@@ -33,7 +36,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |   |
  |   └── slice_m_{PARAMETERS}.zarr
  |       |
- |       ├── .zattrs                   # OME-Zarr compatible slice level metadata
+ |       ├── .zattrs                   # slice level metadata, see ".zattrs"
  |       ├── .zgroup
  |       |
  |       ├── 0                         # resolution levels
@@ -42,8 +45,8 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |           |
  |           ├── .zarray
  |           |
- |           └── s                     # "s" is a custom dimension specific to visor_raw_images, see "visor_stacks" metadata
- |               └─ c                  # "c" is wavelength channel, see "channels" metadata
+ |           └── s                     # "s" is a custom dimension specific to visor_raw_images, see "visor_stacks"
+ |               └─ c                  # "c" is wavelength channel, see "channels"
  |                  └─ z               # "z" is frame number
  |                     └─ y
  |                        └─ x
@@ -61,8 +64,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |       |                             # e.g. xx_brain_10x_20241101
  |       |                             # e.g. xxx_slice_1_40x_icorr_20241101
  |       |
- |       ├── .visor                    # metadata contains source images
- |       ├── .zattrs                   # roi level metadata
+ |       ├── .zattrs                   # roi level metadata, see ".zattrs"
  |       ├── .zgroup
  |       |
  |       ├── 0                         # resolution levels
@@ -72,7 +74,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |           ├── .zarray
  |           |
  |           └── s                     # "s" is optional; for example, "stacks" are no longer present after reconstruction
- |               └─ c                  # "c" is wavelength channel, see "channels" metadata
+ |               └─ c                  # "c" is wavelength channel, see "channels"
  |                  └─ z               # "z" is frame number
  |                     └─ y
  |                        └─ x
@@ -90,45 +92,40 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html), with VISoR specifc extensions.
 
 ### Structure Overview
-| SUBDIRECTORY | SAMPLE LEVEL | ROI/SLICE LEVEL |
+| DIRECTORY | SAMPLE LEVEL | ROI LEVEL |
 |---|---|---|
-| visor_raw_images | [.visor](#quotvisorquot) ||
-||| [.zattr](#quotzattrquot) |
-| visor_{PROCESS_TYPE}_images |||
-||| [.zattr](#quotzattrquot) |
-||| [.visor](#quotvisorquot) |
+| {SAMPLE_ID}.vsr | [info.json](#quotinfojsonquot) ||
+| {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [.zattrs](#quotzattrsquot) |
+| {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [.zattrs](#quotzattrsquot) |
 
 ### Fields comparison with OME-Zarr spec v0.4
 | File | OME-Zarr v0.4 | VISoR |
 |---|---|---|
-| .zattr | [multiscales](https://ngff.openmicroscopy.org/0.4/index.html#multiscale-md) | [multiscales](#multiscales) |
+| .zattrs | [multiscales](https://ngff.openmicroscopy.org/0.4/index.html#multiscale-md) | [multiscales](#multiscales) |
 || - | [visor_stacks](#visorstacks) |
 || - | [channels](#channels) |
+|| - | [sources](#sources) |
 || - | [transforms](#transforms) |
-| .visor | - | [project_info](#projectinfo) |
-|| - | [selected_images](#selectedimages) |
+| info.json | - | [info.json](#quotinfojsonquot) |
+| selected.json | - | [selected.json](#quotselectedjsonquot) |
 
-### ".visor"
-
-#### project_info
-Information of the project
-| FIELD | EXPLAINATION | EXAMPLE |
+### "info.json"
+Information of the `sample`.
+| FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
 | `animal_id` | id of animal | "T070" |
 | `project_name` | name of project | "BCP" |
 | `species` | species | "Mouse" |
 | `subproject_name` | name of subproject | "HSYN-EGFP-1E7-3W" |
 
-#### selected_images
-A list of selected images.
-- For raw images, a slice may be imaged several times, use the version in this list is recommended
-- For processed images, this is the source images on which the current process is based.
-
-| FIELD | EXPLAINATION | EXAMPLE |
+### "selected.json"
+A list of selected slices and channels. For raw images, a slice, or a channel, may be imaged multiple times; it is recommended to use the selected version listed here.
+| FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
-| `path` | path to image directory, relative to {SAMPLE_ID} directory | "visor_icorr_images/slice_1_10x.zarr" |
+| `path` | path to slice zarr file, relative to visor_raw_images directory | "slice_1_10x.zarr" |
+| `channels` | list of wavelength channels | ["488","561"] |
 
-### ".zattr"
+### ".zattrs"
 
 #### multiscales
 Align with "multiscales" in OME-Zarr spec v0.4.
@@ -138,7 +135,7 @@ A list of VISoR stacks with corresponding axis index mappings.
 - Axis indices are 0-based and increment sequentially
 - Stack indices are 1-based with some stacks potentially missing
 
-| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
+| FIELD | TYPE | UNIT | DESCRIPTION | EXAMPLE |
 |---|---|---|---|---|
 | `index` | int | - | visor_stack axis index | 0 |
 | `label` | string | - | stack identifier | "stack_1" |
@@ -146,10 +143,10 @@ A list of VISoR stacks with corresponding axis index mappings.
 
 #### channels
 A list of wavelength channels with corresponding axis index mappings.
-- Axis indices are 0-based and increment sequentially;
-- The order of channels is not guaranteed.
+- Axis indices are 0-based and increment sequentially
+- The order of channels is not guaranteed
 
-| FIELD | TYPE | UNIT | EXPLAINATION | EXAMPLE |
+| FIELD | TYPE | UNIT | DESCRIPTION | EXAMPLE |
 |---|---|---|---|---|
 | `index` | int | - | channel axis index | 0 |
 | `wavelength` | string | nanometer | laser wavelength | "488" |
@@ -169,64 +166,53 @@ A list of wavelength channels with corresponding axis index mappings.
 | `pixel_size` | float | micrometer/pixel | micrometer per pixel | 1.03 |
 | `roi` | list[float] | millimeter | 3D physical roi position coordinates for the slice, [top_left_x, top_left_y, top_left_z, bottom_right_x, bottom_right_y, bottom_right_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
-| `v_schema` | string | - | the version of schema | "2024.11.2" |
+| `v_schema` | string | - | the version of schema | "2024.11.3" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
 | `personnel` | string | - | name initials of the microscopist | "YY" |
 
+#### sources
+A list of source images, on which the current process is based.
+| FIELD | TYPE | DESCRIPTION | EXAMPLE |
+|---|---|---|---|
+| `path` | string | path to source image directory, relative to {SAMPLE_ID}.vsr directory | "visor_raw_images/slice_1_10x.zarr" |
+| `channels` | list[string] | list of wavelength channels | ["488","561"] |
+
 #### transforms
 A list of reconstruction transforms.
-| FIELD | TYPE | EXPLAINATION | EXAMPLE |
+| FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
-| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID} directory | "visor_recon_transforms/xxx_brain_10x_20241101" |
+| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID}.vsr directory | "visor_recon_transforms/xxx_brain_10x_20241101" |
 | `roi` | list[float] | 3D roi coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0.0,0.0,0.0,256.0,256.0,256.0] |
 
 ### Examples
 
-Example: visor_raw_images/.visor
+Example: info.json
 ```json
 {
-    "project_info": {
-        "animal_id": "T070",
-        "project_name": "BCP",
-        "species": "Mouse",
-        "subproject_name": "HSYN-EGFP-1E7-3W"
-    },  
-    "selected_images": [
-        {
-            "path": "visor_raw_images/slice_1_10x.zarr"
-        },
-        ...
-        {
-            "path": "visor_raw_images/slice_23_40x.zarr"
-        }
-    ]
+    "animal_id": "T070",
+    "project_name": "BCP",
+    "species": "Mouse",
+    "subproject_name": "HSYN-EGFP-1E7-3W"
 }
 ```
 
-Example: visor_recon_images/xxx_slice_1_40x_20241101.zarr/.visor
+Example: visor_raw_images/selected.json
 ```json
-{
-    "selected_images": [
-        {
-            "path": "visor_icorr_images/xxx_slice_1_40x_20241012.zarr"
-        }
-    ]
-}
-```
-
-Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.visor
-```json
-{
-    "selected_images": [
-        {
-            "path": "visor_raw_images/slice_1_10x.zarr"
-        },
-        ...
-        {
-            "path": "visor_raw_images/slice_23_40x.zarr"
-        }
-    ]
-}
+[
+    {
+        "path": "slice_1_10x.zarr",
+        "channels": ["488","561"]
+    },
+    {
+        "path": "slice_1_10x_1.zarr",
+        "channels": ["405","640"]
+    },
+    ...
+    {
+        "path": "slice_23_40x.zarr",
+        "channels": ["405","488","561","640"]
+    }
+]
 ```
 
 Example: visor_raw_images/slice_1_10x.zarr/.zattrs
@@ -296,10 +282,82 @@ Example: visor_raw_images/slice_1_10x.zarr/.zattrs
         "pixel_size": 1.03,
         "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
         "v_software": "2.8.7",
-        "v_schema": "2024.11.2",
+        "v_schema": "2024.11.3",
         "created_time": "2024-11-12T00:00:00Z",
         "personnel": "YY"
     }]
+}
+```
+
+Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/.zattrs
+```json
+{
+    "multiscales": [
+        {
+            "version": "0.4",
+            "name": "slice_1_10x",
+            "axes": [
+                {"name": "s", "type": "visor_stack"},
+                {"name": "c", "type": "channel"},
+                {"name": "y", "type": "space", "unit": "micrometer"},
+                {"name": "x", "type": "space", "unit": "micrometer"}
+            ],
+            "datasets": [
+                {
+                    "path": "0",
+                    "coordinateTransformations": [{
+                        "type": "scale",
+                        "scale": [1.0, 1.0, 1.0, 1.0]
+                    }]
+                },
+                {
+                    "path": "1",
+                    "coordinateTransformations": [{
+                        "type": "scale",
+                        "scale": [1.0, 1.0, 2.0, 2.0]
+                    }]
+                }
+                ...
+            ],
+            "coordinateTransformations": [{
+                "type": "scale",
+                "scale": [1.0, 1.0, 1.03, 1.03]
+            }],
+            "type": "mean",
+            "metadata": {
+                "method": "dask.array.coarsen",
+                "version": "2024.9.1",
+                "args": "[np.mean]",
+                "kwargs": {"multichannel": true}
+            }
+        }
+    ],
+    "visor_stacks": [
+        {
+            "index": 0,
+            "label": "stack_1"
+        },
+        {
+            "index": 1,
+            "label": "stack_3"
+        }
+    ],
+    "channels": [
+        {
+            "index": 0,
+            "wavelength": "488"
+        },
+        {
+            "index": 1,
+            "wavelength": "561"
+        }
+    ],
+    "sources": [
+        {
+            "path": "visor_icorr_images/slice_1_10x.zarr",
+            "channels": ["488","561"]
+        }
+    ]
 }
 ```
 
@@ -340,6 +398,31 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
                 "args": "[np.mean]",
                 "kwargs": {"multichannel": true}
             }
+        }
+    ],
+    "channels": [
+        {
+            "index": 0,
+            "wavelength": "488"
+        },
+        {
+            "index": 1,
+            "wavelength": "561"
+        }
+    ],
+    "sources": [
+        {
+            "path": "visor_raw_images/slice_1_40x.zarr",
+            "channels": ["488"]
+        },
+        {
+            "path": "visor_raw_images/slice_1_40x_1.zarr",
+            "channels": ["561"]
+        },
+        ...
+        {
+            "path": "visor_raw_images/slice_23_40x.zarr",
+            "channels": ["488","561"]
         }
     ],
     "transforms": [{

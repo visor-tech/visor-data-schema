@@ -1,6 +1,17 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2024.11.3]
+
+- use .vsr extension for VISoR image type
+- new info.json metadata file contains sample info
+- new visor_raw_images/selected.json metadata file contains selected slices and channels
+- moved source images to .zattrs['sources']
+- removed .visor metadata file
+- updated LICENSE to BSD 3-Clause License
+
+[v2024.11.3]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2024.11.3
+
 
 ## [v2024.11.2]
 
