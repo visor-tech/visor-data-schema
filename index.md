@@ -1,10 +1,10 @@
-This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html).
+This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html).
 
 ## Version
-2024.11.3
+2025.5.1
 
 ## Version Date
-2024-11-21
+2025-05-04
 
 ## Terms
 | TERM | DEFINITION |
@@ -36,20 +36,20 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |   |
  |   └── slice_m_{PARAMETERS}.zarr
  |       |
- |       ├── .zattrs                   # slice level metadata, see ".zattrs"
- |       ├── .zgroup
+ |       ├── zarr.json                 # contains custom slice level metadata, see zarr.json
  |       |
  |       ├── 0                         # resolution levels
  |       |   ...
  |       └── n
  |           |
- |           ├── .zarray
+ |           ├── zarr.json
  |           |
- |           └── s                     # "s" is a custom dimension specific to visor_raw_images, see "visor_stacks"
- |               └─ c                  # "c" is wavelength channel, see "channels"
- |                  └─ z               # "z" is frame number
- |                     └─ y
- |                        └─ x
+ |           └── c                     # "c" is zarr v3 group for "chunks"
+ |               └── vs                # "vs" is a custom dimension specific to visor_raw_images, see "visor_stacks"
+ |                   └─ ch             # "ch" is wavelength channel, see "channels"
+ |                       └─ z          # "z" is frame number
+ |                          └─ y
+ |                             └─ x
  |
  |
  ├── [visor_{PROCESS_TYPE}_images]     # optional, processed images
@@ -64,20 +64,20 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |       |                             # e.g. xx_brain_10x_20241101
  |       |                             # e.g. xxx_slice_1_40x_icorr_20241101
  |       |
- |       ├── .zattrs                   # roi level metadata, see ".zattrs"
- |       ├── .zgroup
+ |       ├── zarr.json                 # contains custom roi level metadata, see zarr.json
  |       |
  |       ├── 0                         # resolution levels
  |       |   ...
  |       └── n
  |           |
- |           ├── .zarray
+ |           ├── zarr.json
  |           |
- |           └── s                     # "s" is optional; for example, "stacks" are no longer present after reconstruction
- |               └─ c                  # "c" is wavelength channel, see "channels"
- |                  └─ z               # "z" is frame number
- |                     └─ y
- |                        └─ x
+ |           └── c                     # "c" is zarr v3 group for "chunks"
+ |               └── vs                # "vs" is optional; for example, "stacks" are no longer present after reconstruction
+ |                   └─ ch             # "ch" is wavelength channel, see "channels"
+ |                       └─ z          # "z" is frame number
+ |                          └─ y
+ |                             └─ x
  |
  |
  └── [visor_recon_transforms]          # optional, reconstruction transforms
@@ -89,19 +89,19 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 
 ## Metadata
 
-Metadata formats are based on [OME-Zarr spec v0.4](https://ngff.openmicroscopy.org/0.4/index.html), with VISoR specifc extensions.
+Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html), with VISoR specifc extensions.
 
 ### Structure Overview
 | DIRECTORY | SAMPLE LEVEL | ROI LEVEL |
 |---|---|---|
 | {SAMPLE_ID}.vsr | [info.json](#quotinfojsonquot) ||
-| {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [.zattrs](#quotzattrsquot) |
-| {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [.zattrs](#quotzattrsquot) |
+| {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [zarr.json](#quotzarrjsonquot) |
+| {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [zarr.json](#quotzarrjsonquot) |
 
-### Fields comparison with OME-Zarr spec v0.4
-| File | OME-Zarr v0.4 | VISoR |
+### Fields comparison with OME-Zarr spec v0.5
+| File | OME-Zarr v0.5 | VISoR |
 |---|---|---|
-| .zattrs | [multiscales](https://ngff.openmicroscopy.org/0.4/index.html#multiscale-md) | [multiscales](#multiscales) |
+| zarr.json | [multiscales](https://ngff.openmicroscopy.org/0.5/index.html#multiscale-md) | [multiscales](#multiscales) |
 || - | [visor_stacks](#visorstacks) |
 || - | [channels](#channels) |
 || - | [sources](#sources) |
@@ -125,10 +125,10 @@ A list of selected slices and channels. For raw images, a slice, or a channel, m
 | `path` | path to slice zarr file, relative to visor_raw_images directory | "slice_1_10x.zarr" |
 | `channels` | list of wavelength channels | ["488","561"] |
 
-### ".zattrs"
+### "zarr.json"
 
 #### multiscales
-Align with "multiscales" in OME-Zarr spec v0.4.
+Align with "multiscales" in OME-Zarr spec v0.5.
 
 #### visor_stacks
 A list of VISoR stacks with corresponding axis index mappings.
@@ -215,220 +215,244 @@ Example: visor_raw_images/selected.json
 ]
 ```
 
-Example: visor_raw_images/slice_1_10x.zarr/.zattrs
+Example: visor_raw_images/slice_1_10x.zarr/zarr.json
 ```json
 {
-    "multiscales": [
-        {
-            "version": "0.4",
-            "name": "slice_1_10x",
-            "axes": [
-                {"name": "s", "type": "visor_stack"},
-                {"name": "c", "type": "channel"},
-                {"name": "z", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-                {"name": "x", "type": "space", "unit": "micrometer"}
-            ],
-            "datasets": [
+    "zarr_format": 3,
+    "node_type": "group",
+    "attributes": {
+        "ome": {
+            "multiscales": [
                 {
-                    "path": "0",
+                    "version": "0.5",
+                    "name": "slice_1_10x",
+                    "axes": [
+                        {"name": "s", "type": "visor_stack"},
+                        {"name": "c", "type": "channel"},
+                        {"name": "z", "type": "space", "unit": "micrometer"},
+                        {"name": "y", "type": "space", "unit": "micrometer"},
+                        {"name": "x", "type": "space", "unit": "micrometer"}
+                    ],
+                    "datasets": [
+                        {
+                            "path": "0",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
+                            }]
+                        },
+                        {
+                            "path": "1",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 1.0, 2.0, 2.0]
+                            }]
+                        }
+                        ...
+                    ],
                     "coordinateTransformations": [{
                         "type": "scale",
-                        "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
-                    }]
-                },
-                {
-                    "path": "1",
-                    "coordinateTransformations": [{
-                        "type": "scale",
-                        "scale": [1.0, 1.0, 1.0, 2.0, 2.0]
-                    }]
+                        "scale": [1.0, 1.0, 3.5, 1.03, 1.03]
+                    }],
+                    "type": "mean",
+                    "metadata": {
+                        "method": "dask.array.coarsen",
+                        "version": "2025.4.1",
+                        "args": "[np.mean]",
+                        "kwargs": {"multichannel": true}
+                    }
                 }
-                ...
+            ]
+        },
+        "visor": {
+            "visor_stacks": [
+                {"index": 0, "label": "stack_1", "position": [20.2647, 61.2581]},
+                {"index": 1, "label": "stack_3", "position": [20.2647, 65.2581]}
             ],
-            "coordinateTransformations": [{
-                "type": "scale",
-                "scale": [1.0, 1.0, 3.5, 1.03, 1.03]
-            }],
-            "type": "mean",
-            "metadata": {
-                "method": "dask.array.coarsen",
-                "version": "2024.9.1",
-                "args": "[np.mean]",
-                "kwargs": {"multichannel": true}
-            }
+            "channels": [{
+                "index": 0,
+                "wavelength": "488",
+                "slice_index": 3,
+                "slide_index": 1,
+                "hardware_id": "VISoR19",
+                "power": 60.0,
+                "filter": "520/40",
+                "exposure": 4.0,
+                "max_volts": 2.2,
+                "volts_offset": 0.45,
+                "s_route": 1,
+                "velocity": 0.875,
+                "move_y": 2.0,
+                "12bit": 1,
+                "image_size": "2048x788",
+                "pixel_size": 1.03,
+                "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
+                "v_software": "2.8.7",
+                "v_schema": "2024.11.3",
+                "created_time": "2024-11-12T00:00:00Z",
+                "personnel": "YY"
+            }]
         }
-    ],
-    "visor_stacks": [
-        {"index": 0, "label": "stack_1", "position": [20.2647, 61.2581]},
-        {"index": 1, "label": "stack_3", "position": [20.2647, 65.2581]}
-    ],
-    "channels": [{
-        "index": 0,
-        "wavelength": "488",
-        "slice_index": 3,
-        "slide_index": 1,
-        "hardware_id": "VISoR19",
-        "power": 60.0,
-        "filter": "520/40",
-        "exposure": 4.0,
-        "max_volts": 2.2,
-        "volts_offset": 0.45,
-        "s_route": 1,
-        "velocity": 0.875,
-        "move_y": 2.0,
-        "12bit": 1,
-        "image_size": "2048x788",
-        "pixel_size": 1.03,
-        "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
-        "v_software": "2.8.7",
-        "v_schema": "2024.11.3",
-        "created_time": "2024-11-12T00:00:00Z",
-        "personnel": "YY"
-    }]
+    }
 }
 ```
 
-Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/.zattrs
+Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/zarr.json
 ```json
 {
-    "multiscales": [
-        {
-            "version": "0.4",
-            "name": "slice_1_10x",
-            "axes": [
-                {"name": "s", "type": "visor_stack"},
-                {"name": "c", "type": "channel"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-                {"name": "x", "type": "space", "unit": "micrometer"}
-            ],
-            "datasets": [
+    "zarr_format": 3,
+    "node_type": "group",
+    "attributes": {
+        "ome": {
+            "version": "0.5",
+            "multiscales": [
                 {
-                    "path": "0",
+                    "name": "slice_1_10x",
+                    "axes": [
+                        {"name": "s", "type": "visor_stack"},
+                        {"name": "c", "type": "channel"},
+                        {"name": "y", "type": "space", "unit": "micrometer"},
+                        {"name": "x", "type": "space", "unit": "micrometer"}
+                    ],
+                    "datasets": [
+                        {
+                            "path": "0",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 1.0, 1.0]
+                            }]
+                        },
+                        {
+                            "path": "1",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 2.0, 2.0]
+                            }]
+                        }
+                        ...
+                    ],
                     "coordinateTransformations": [{
                         "type": "scale",
-                        "scale": [1.0, 1.0, 1.0, 1.0]
-                    }]
+                        "scale": [1.0, 1.0, 1.03, 1.03]
+                    }],
+                    "type": "mean",
+                    "metadata": {
+                        "method": "dask.array.coarsen",
+                        "version": "2024.9.1",
+                        "args": "[np.mean]",
+                        "kwargs": {"multichannel": true}
+                    }
+                }
+            ]
+        },
+        "visor": {
+            "visor_stacks": [
+                {
+                    "index": 0,
+                    "label": "stack_1"
                 },
                 {
-                    "path": "1",
-                    "coordinateTransformations": [{
-                        "type": "scale",
-                        "scale": [1.0, 1.0, 2.0, 2.0]
-                    }]
+                    "index": 1,
+                    "label": "stack_3"
                 }
-                ...
             ],
-            "coordinateTransformations": [{
-                "type": "scale",
-                "scale": [1.0, 1.0, 1.03, 1.03]
-            }],
-            "type": "mean",
-            "metadata": {
-                "method": "dask.array.coarsen",
-                "version": "2024.9.1",
-                "args": "[np.mean]",
-                "kwargs": {"multichannel": true}
-            }
+            "channels": [
+                {
+                    "index": 0,
+                    "wavelength": "488"
+                },
+                {
+                    "index": 1,
+                    "wavelength": "561"
+                }
+            ],
+            "sources": [
+                {
+                    "path": "visor_icorr_images/slice_1_10x.zarr",
+                    "channels": ["488","561"]
+                }
+            ]
         }
-    ],
-    "visor_stacks": [
-        {
-            "index": 0,
-            "label": "stack_1"
-        },
-        {
-            "index": 1,
-            "label": "stack_3"
-        }
-    ],
-    "channels": [
-        {
-            "index": 0,
-            "wavelength": "488"
-        },
-        {
-            "index": 1,
-            "wavelength": "561"
-        }
-    ],
-    "sources": [
-        {
-            "path": "visor_icorr_images/slice_1_10x.zarr",
-            "channels": ["488","561"]
-        }
-    ]
+    }
 }
 ```
 
-Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
+Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
 ```json
 {
-    "multiscales": [
-        {
-            "version": "0.4",
-            "name": "xxx_slice_1_20241101",
-            "axes": [
-                {"name": "c", "type": "channel"},
-                {"name": "z", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-                {"name": "x", "type": "space", "unit": "micrometer"}
-            ],
-            "datasets": [
+    "zarr_format": 3,
+    "node_type": "group",
+    "attributes": {
+        "ome": {
+            "version": "0.5",
+            "multiscales": [
                 {
-                    "path": "0",
-                    "coordinateTransformations": [{
-                        "type": "scale",
-                        "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
-                    }]
+                    "name": "xxx_slice_1_20241101",
+                    "axes": [
+                        {"name": "c", "type": "channel"},
+                        {"name": "z", "type": "space", "unit": "micrometer"},
+                        {"name": "y", "type": "space", "unit": "micrometer"},
+                        {"name": "x", "type": "space", "unit": "micrometer"}
+                    ],
+                    "datasets": [
+                        {
+                            "path": "0",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 1.0, 1.0, 1.0]
+                            }]
+                        },
+                        {
+                            "path": "1",
+                            "coordinateTransformations": [{
+                                "type": "scale",
+                                "scale": [1.0, 1.0, 2.0, 2.0, 2.0]
+                            }]
+                        }
+                        ...
+                    ],
+                    "type": "mean",
+                    "metadata": {
+                        "method": "dask.array.coarsen",
+                        "version": "2024.9.1",
+                        "args": "[np.mean]",
+                        "kwargs": {"multichannel": true}
+                    }
+                }
+            ]
+        },
+        "visor": {
+            "channels": [
+                {
+                    "index": 0,
+                    "wavelength": "488"
                 },
                 {
-                    "path": "1",
-                    "coordinateTransformations": [{
-                        "type": "scale",
-                        "scale": [1.0, 1.0, 2.0, 2.0, 2.0]
-                    }]
+                    "index": 1,
+                    "wavelength": "561"
                 }
-                ...
             ],
-            "type": "mean",
-            "metadata": {
-                "method": "dask.array.coarsen",
-                "version": "2024.9.1",
-                "args": "[np.mean]",
-                "kwargs": {"multichannel": true}
-            }
+            "sources": [
+                {
+                    "path": "visor_raw_images/slice_1_40x.zarr",
+                    "channels": ["488"]
+                },
+                {
+                    "path": "visor_raw_images/slice_1_40x_1.zarr",
+                    "channels": ["561"]
+                },
+                ...
+                {
+                    "path": "visor_raw_images/slice_23_40x.zarr",
+                    "channels": ["488","561"]
+                }
+            ],
+            "transforms": [{
+                "path": "visor_recon_transforms/xxx_brain_20241101",
+                "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
+            }]
         }
-    ],
-    "channels": [
-        {
-            "index": 0,
-            "wavelength": "488"
-        },
-        {
-            "index": 1,
-            "wavelength": "561"
-        }
-    ],
-    "sources": [
-        {
-            "path": "visor_raw_images/slice_1_40x.zarr",
-            "channels": ["488"]
-        },
-        {
-            "path": "visor_raw_images/slice_1_40x_1.zarr",
-            "channels": ["561"]
-        },
-        ...
-        {
-            "path": "visor_raw_images/slice_23_40x.zarr",
-            "channels": ["488","561"]
-        }
-    ],
-    "transforms": [{
-        "path": "visor_recon_transforms/xxx_brain_20241101",
-        "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
-    }]
+    }
 }
 ```
 
@@ -439,8 +463,11 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/.zattrs
 | number of stacks | 3 |
 | stack shape | (1474, 788, 2048) |
 | frame shape | (788, 2048) |
-| dtype | dtype('uint16') |
-| chunk size | (256, 256, 256) |
+| data_type | 'uint16' |
+| chunk_grid | (1, 1, 64, 64, 64) |
+| raw data shard shape | (1, 1, 8192, 832, 2048) |
+| recon data shard shape | (1, 1, 2048, 2048, 2048) |
+| chunk_key_encoding | os.sep |
 | default fill pixel value | 0 |
 | memory order | 'C' |
 
