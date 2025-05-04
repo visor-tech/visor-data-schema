@@ -227,8 +227,8 @@ Example: visor_raw_images/slice_1_10x.zarr/zarr.json
                     "version": "0.5",
                     "name": "slice_1_10x",
                     "axes": [
-                        {"name": "s", "type": "visor_stack"},
-                        {"name": "c", "type": "channel"},
+                        {"name": "vs", "type": "visor_stack"},
+                        {"name": "ch", "type": "channel"},
                         {"name": "z", "type": "space", "unit": "micrometer"},
                         {"name": "y", "type": "space", "unit": "micrometer"},
                         {"name": "x", "type": "space", "unit": "micrometer"}
@@ -309,8 +309,8 @@ Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/zarr.json
                 {
                     "name": "slice_1_10x",
                     "axes": [
-                        {"name": "s", "type": "visor_stack"},
-                        {"name": "c", "type": "channel"},
+                        {"name": "vs", "type": "visor_stack"},
+                        {"name": "ch", "type": "channel"},
                         {"name": "y", "type": "space", "unit": "micrometer"},
                         {"name": "x", "type": "space", "unit": "micrometer"}
                     ],
@@ -389,7 +389,7 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
                 {
                     "name": "xxx_slice_1_20241101",
                     "axes": [
-                        {"name": "c", "type": "channel"},
+                        {"name": "ch", "type": "channel"},
                         {"name": "z", "type": "space", "unit": "micrometer"},
                         {"name": "y", "type": "space", "unit": "micrometer"},
                         {"name": "x", "type": "space", "unit": "micrometer"}
