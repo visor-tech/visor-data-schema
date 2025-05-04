@@ -8,7 +8,7 @@
 - added "c" zarr group
 - renamed "s" to "vs", "c" to "ch"
 
-[v2024.5.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2024.5.1
+[v2025.5.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2025.5.1
 
 
 ## [v2024.11.3]

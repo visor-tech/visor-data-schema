@@ -166,7 +166,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `pixel_size` | float | micrometer/pixel | micrometer per pixel | 1.03 |
 | `roi` | list[float] | millimeter | 3D physical roi position coordinates for the slice, [top_left_x, top_left_y, top_left_z, bottom_right_x, bottom_right_y, bottom_right_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
-| `v_schema` | string | - | the version of schema | "2024.11.3" |
+| `v_schema` | string | - | the version of schema | "2025.5.1" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
 | `personnel` | string | - | name initials of the microscopist | "YY" |
 
@@ -288,7 +288,7 @@ Example: visor_raw_images/slice_1_10x.zarr/zarr.json
                 "pixel_size": 1.03,
                 "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
                 "v_software": "2.8.7",
-                "v_schema": "2024.11.3",
+                "v_schema": "2025.5.1",
                 "created_time": "2024-11-12T00:00:00Z",
                 "personnel": "YY"
             }]
@@ -338,7 +338,7 @@ Example: visor_projn_images/xxx_slice_1_10x_20241101.zarr/zarr.json
                     "type": "mean",
                     "metadata": {
                         "method": "dask.array.coarsen",
-                        "version": "2024.9.1",
+                        "version": "2025.4.1",
                         "args": "[np.mean]",
                         "kwargs": {"multichannel": true}
                     }
@@ -414,7 +414,7 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
                     "type": "mean",
                     "metadata": {
                         "method": "dask.array.coarsen",
-                        "version": "2024.9.1",
+                        "version": "2025.4.1",
                         "args": "[np.mean]",
                         "kwargs": {"multichannel": true}
                     }
