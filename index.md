@@ -222,9 +222,9 @@ Example: visor_raw_images/slice_1_10x.zarr/zarr.json
     "node_type": "group",
     "attributes": {
         "ome": {
+            "version": "0.5",
             "multiscales": [
                 {
-                    "version": "0.5",
                     "name": "slice_1_10x",
                     "axes": [
                         {"name": "vs", "type": "visor_stack"},
