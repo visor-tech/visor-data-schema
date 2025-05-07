@@ -1,6 +1,16 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2025.5.1]
+
+- update to adopt OME-Zarr spec v0.5 and zarr v3
+- use zarr.json, deprecated .zattrs .zgroup .zarray
+- added "c" zarr group
+- renamed "s" to "vs", "c" to "ch"
+
+[v2025.5.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2025.5.1
+
+
 ## [v2024.11.3]
 
 - use .vsr extension for VISoR image type
