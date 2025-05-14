@@ -1,6 +1,12 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2025.5.2]
+
+- added custom projection images in raw image, for imaging quality assurance
+
+[v2025.5.2]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2025.5.2
+
 ## [v2025.5.1]
 
 - update to adopt OME-Zarr spec v0.5 and zarr v3
