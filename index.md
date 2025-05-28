@@ -84,9 +84,24 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |
  └── [visor_recon_transforms]          # optional, reconstruction transforms
      |
-     └── {VERSION}                     # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
-                                       # e.g. xxx_brain_10x_20241101
-                                       # e.g. xxx_slice_1_40x_icorr_20241101
+     └── {VERSION}                     # VERSION format: {PERSON_ID}_{DATE}
+         |                             # e.g. xxx_20250525
+         |
+         ├── recon.json                # reconstruction metadata, see "recon.json"
+         |
+         ├── slice_1_{PARAMETERS}      # each slice directory corresponds to its respective slice raw image
+         |                             # contains an independent transform group
+         |   ...                       # matches the raw image naming convention
+         |
+         └── slice_m_{PARAMETERS}
+             |
+             ├── transforms.json       # slice level transforms metadata, see "transforms.json"
+             |
+             ├── raw_to_ortho          # transform from visor raw image space to orthogonal space
+             ├── raw_to_slice          # transform from visor raw image space to slice space
+             ├── raw_to_brain          # transform from visor raw image space to brain space
+             └── slice_to_brain        # transform from slice space to brain space
+
 ```
 
 ## Metadata
@@ -99,6 +114,7 @@ Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.o
 | {SAMPLE_ID}.vsr | [info.json](#quotinfojsonquot) ||
 | {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [zarr.json](#quotzarrjsonquot) |
 | {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [zarr.json](#quotzarrjsonquot) |
+| {SAMPLE_ID}.vsr/visor_recon_transforms | [recon.json](#quotreconjsonquot) | [transforms.json](#quottransformsjsonquot) |
 
 ### Fields comparison with OME-Zarr spec v0.5
 | File | OME-Zarr v0.5 | VISoR |
@@ -183,8 +199,33 @@ A list of source images, on which the current process is based.
 A list of reconstruction transforms.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
-| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID}.vsr directory | "visor_recon_transforms/xxx_brain_10x_20241101" |
+| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID}.vsr directory | "visor_recon_transforms/xxx_20250525/slice_1_10x" |
 | `roi` | list[float] | 3D roi coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0.0,0.0,0.0,256.0,256.0,256.0] |
+
+### "recon.json"
+Information of the `reconstruction`.
+| FIELD | DESCRIPTION | EXAMPLE |
+|---|---|---|
+| `personnel` | person who did reconstruction | "YY" |
+| `create_time` | time when reconstruction finished, in ISO 8601 format | "2024-05-18T00:00:00Z" |
+| `spaces` | a list of available spaces | "brain" "slice" "ortho" "raw" |
+| `keywords` | a list of reconstruction algorithms, libraries etc. | "b-spine" "elastic" "deep learning" |
+| `slices` | list of slice transforms | see slices |
+#### slices
+A list of source images, on which the current process is based.
+| FIELD | TYPE | DESCRIPTION | EXAMPLE |
+|---|---|---|---|
+| `path` | string | path to slice directory, relative to visor_recon_transforms directory | "slice_1_10x" |
+| `transforms` | list[string] | list of transforms | ["raw_to_ortho","raw_to_brain"] |
+
+### "transforms.json"
+List of reconstruction transforms.
+| FIELD | DESCRIPTION | EXAMPLE |
+|---|---|---|
+| `name` | name of transform directory, relative to slice directory | "raw_to_ortho" |
+| `type` | type of transform | "affine" "model" |
+| `format` | store format of transform | "zarr" "binary" |
+
 
 ### Examples
 
@@ -449,13 +490,52 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
                     "channels": ["488","561"]
                 }
             ],
-            "transforms": [{
-                "path": "visor_recon_transforms/xxx_brain_20241101",
-                "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
-            }]
+            "transforms": [
+                {
+                    "path": "visor_recon_transforms/xxx_20241101/slice_1_40x",
+                    "roi": [0.0, 0.0, 0.0, 60000.0, 70000.0, 300.0]
+                },
+                ...
+                {
+                    "path": "visor_recon_transforms/xxx_20241101/slice_23_40x",
+                    "roi": [0.0, 0.0, 0.0, 60000.0, 70000.0, 300.0]
+                }
+            ]
         }
     }
 }
+```
+
+Example: visor_recon_transforms/xxx_20250525/recon.json
+```json
+{
+    "personnel": "YY",
+    "create_time": "2025-05-25T20:25:05Z",
+    "spaces": ["raw","ortho","slice","brain"],
+    "keywords": ["SimpleITK","Elastix"],
+    "slices": [
+        {
+            "path": "slice_1_10x",
+            "transforms": ["raw_to_ortho", "raw_to_brain"]
+        }
+    ]
+}
+```
+
+Example: visor_recon_transforms/xxx_20250525/slice_1_10x/transforms.json
+```json
+[
+    {
+        "name": "raw_to_ortho",
+        "type": "affine",
+        "format": "zarr"
+    },
+    {
+        "name": "raw_to_brain",
+        "type": "model",
+        "format": "binary"
+    }
+]
 ```
 
 ## Typical values
