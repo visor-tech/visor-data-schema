@@ -1,6 +1,12 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2025.5.3]
+
+- updated visor_recon_transforms schema
+
+[v2025.5.3]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2025.5.3
+
 ## [v2025.5.2]
 
 - added custom projection images in raw image, for imaging quality assurance
