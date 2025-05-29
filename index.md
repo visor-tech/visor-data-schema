@@ -12,7 +12,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
 | `slice`  | Sample slice, may contain multiple 'stacks' |
 | `stack`  | A stack of 'frames' |
-| `frame`  | A 2D picture took by microscopy camera |
+| `frame`  | A 2D picture taken by microscopy camera |
 
 ## Data Schema
 ```
@@ -106,7 +106,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 
 ## Metadata
 
-Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html), with VISoR specifc extensions.
+Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html), with VISoR specific extensions.
 
 ### Structure Overview
 | DIRECTORY | SAMPLE LEVEL | ROI LEVEL |
@@ -172,7 +172,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `slide_index` | int | - | slide index | 1 |
 | `hardware_id` | string | name of microscope | "VISoR19" |
 | `power` | float | milliwatt | laser power | 60.0 |
-| `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 presents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
+| `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 represents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
 | `exposure` | float | milliseconds | exposure time | 4.0 |
 | `max_volts` | float | volt | microscope scanner configuration | 2.2 |
 | `volts_offset` | float | volt | scanner offset | 0.45 |
@@ -195,12 +195,9 @@ A list of source images, on which the current process is based.
 | `path` | string | path to source image directory, relative to {SAMPLE_ID}.vsr directory | "visor_raw_images/slice_1_10x.zarr" |
 | `channels` | list[string] | list of wavelength channels | ["488","561"] |
 
-#### transforms
-A list of reconstruction transforms.
-| FIELD | TYPE | DESCRIPTION | EXAMPLE |
-|---|---|---|---|
-| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID}.vsr directory | "visor_recon_transforms/xxx_20250525/slice_1_10x" |
-| `roi` | list[float] | 3D roi coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0.0,0.0,0.0,256.0,256.0,256.0] |
+#### transform_version
+Version of the reconstruction transform.
+e.g. xxx_20250525
 
 ### "recon.json"
 Information of the `reconstruction`.
@@ -209,22 +206,22 @@ Information of the `reconstruction`.
 | `personnel` | person who did reconstruction | "YY" |
 | `create_time` | time when reconstruction finished, in ISO 8601 format | "2024-05-18T00:00:00Z" |
 | `spaces` | a list of available spaces | "brain" "slice" "ortho" "raw" |
-| `keywords` | a list of reconstruction algorithms, libraries etc. | "b-spine" "elastic" "deep learning" |
+| `keywords` | a list of reconstruction algorithms, libraries etc. | "b-spline" "elastic" "deep learning" |
 | `slices` | list of slice transforms | see slices |
 #### slices
 A list of source images, on which the current process is based.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
 | `path` | string | path to slice directory, relative to visor_recon_transforms directory | "slice_1_10x" |
-| `transforms` | list[string] | list of transforms | ["raw_to_ortho","raw_to_brain"] |
+| `transforms` | list[string] | list of available transforms | ["raw_to_ortho","raw_to_brain"] |
 
 ### "transforms.json"
 List of reconstruction transforms.
 | FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
 | `name` | name of transform directory, relative to slice directory | "raw_to_ortho" |
-| `type` | type of transform | "affine" "model" |
-| `format` | store format of transform | "zarr" "binary" |
+| `type` | type of transform | "affine" "b-spline" "dense displacement field" "neural network" |
+| `format` | store format of transform | "npy" "zarr" "mha" "onnx" |
 
 
 ### Examples
@@ -490,17 +487,7 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
                     "channels": ["488","561"]
                 }
             ],
-            "transforms": [
-                {
-                    "path": "visor_recon_transforms/xxx_20241101/slice_1_40x",
-                    "roi": [0.0, 0.0, 0.0, 60000.0, 70000.0, 300.0]
-                },
-                ...
-                {
-                    "path": "visor_recon_transforms/xxx_20241101/slice_23_40x",
-                    "roi": [0.0, 0.0, 0.0, 60000.0, 70000.0, 300.0]
-                }
-            ]
+            "transform_version": "xxx_20250525"
         }
     }
 }
@@ -532,8 +519,8 @@ Example: visor_recon_transforms/xxx_20250525/slice_1_10x/transforms.json
     },
     {
         "name": "raw_to_brain",
-        "type": "model",
-        "format": "binary"
+        "type": "b-spline",
+        "format": "mha"
     }
 ]
 ```
