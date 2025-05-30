@@ -1,7 +1,7 @@
 This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html).
 
 ## Version
-2025.5.2
+2025.5.3
 
 ## Version Date
 2025-05-14
@@ -12,7 +12,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 | `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
 | `slice`  | Sample slice, may contain multiple 'stacks' |
 | `stack`  | A stack of 'frames' |
-| `frame`  | A 2D picture took by microscopy camera |
+| `frame`  | A 2D picture taken by microscopy camera |
 
 ## Data Schema
 ```
@@ -84,14 +84,29 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
  |
  └── [visor_recon_transforms]          # optional, reconstruction transforms
      |
-     └── {VERSION}                     # VERSION format: {PERSON_ID}_{ROI_ID}_{DATE}
-                                       # e.g. xxx_brain_10x_20241101
-                                       # e.g. xxx_slice_1_40x_icorr_20241101
+     └── {VERSION}                     # VERSION format: {PERSON_ID}_{DATE}
+         |                             # e.g. xxx_20250525
+         |
+         ├── recon.json                # reconstruction metadata, see "recon.json"
+         |
+         ├── slice_1_{PARAMETERS}      # each slice directory corresponds to its respective slice raw image
+         |                             # contains an independent transform group
+         |   ...                       # matches the raw image naming convention
+         |
+         └── slice_m_{PARAMETERS}
+             |
+             ├── transforms.json       # slice level transforms metadata, see "transforms.json"
+             |
+             ├── raw_to_ortho          # transform from visor raw image space to orthogonal space
+             ├── raw_to_slice          # transform from visor raw image space to slice space
+             ├── raw_to_brain          # transform from visor raw image space to brain space
+             └── slice_to_brain        # transform from slice space to brain space
+
 ```
 
 ## Metadata
 
-Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html), with VISoR specifc extensions.
+Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html), with VISoR specific extensions.
 
 ### Structure Overview
 | DIRECTORY | SAMPLE LEVEL | ROI LEVEL |
@@ -99,6 +114,7 @@ Metadata formats are based on [OME-Zarr spec v0.5](https://ngff.openmicroscopy.o
 | {SAMPLE_ID}.vsr | [info.json](#quotinfojsonquot) ||
 | {SAMPLE_ID}.vsr/visor_raw_images | [selected.json](#quotselectedjsonquot) | [zarr.json](#quotzarrjsonquot) |
 | {SAMPLE_ID}.vsr/visor_{PROCESS_TYPE}_images || [zarr.json](#quotzarrjsonquot) |
+| {SAMPLE_ID}.vsr/visor_recon_transforms | [recon.json](#quotreconjsonquot) | [transforms.json](#quottransformsjsonquot) |
 
 ### Fields comparison with OME-Zarr spec v0.5
 | File | OME-Zarr v0.5 | VISoR |
@@ -156,7 +172,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `slide_index` | int | - | slide index | 1 |
 | `hardware_id` | string | name of microscope | "VISoR19" |
 | `power` | float | milliwatt | laser power | 60.0 |
-| `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 presents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
+| `filter` | string | nanometer/nanometer | optical filter info, central wavelength /  bandwidth, for example, 520/40 represents 520nm±(40/2)nm i.e. 500-540nm | "520/40" |
 | `exposure` | float | milliseconds | exposure time | 4.0 |
 | `max_volts` | float | volt | microscope scanner configuration | 2.2 |
 | `volts_offset` | float | volt | scanner offset | 0.45 |
@@ -168,7 +184,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `pixel_size` | float | micrometer/pixel | micrometer per pixel | 1.03 |
 | `roi` | list[float] | millimeter | 3D physical roi position coordinates for the slice, [top_left_x, top_left_y, top_left_z, bottom_right_x, bottom_right_y, bottom_right_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
-| `v_schema` | string | - | the version of schema | "2025.5.2" |
+| `v_schema` | string | - | the version of schema | "2025.5.3" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
 | `personnel` | string | - | name initials of the microscopist | "YY" |
 
@@ -179,12 +195,34 @@ A list of source images, on which the current process is based.
 | `path` | string | path to source image directory, relative to {SAMPLE_ID}.vsr directory | "visor_raw_images/slice_1_10x.zarr" |
 | `channels` | list[string] | list of wavelength channels | ["488","561"] |
 
-#### transforms
-A list of reconstruction transforms.
+#### transform_version
+Version of the reconstruction transform.
+e.g. xxx_20250525
+
+### "recon.json"
+Information of the `reconstruction`.
+| FIELD | DESCRIPTION | EXAMPLE |
+|---|---|---|
+| `personnel` | person who did reconstruction | "YY" |
+| `create_time` | time when reconstruction finished, in ISO 8601 format | "2024-05-18T00:00:00Z" |
+| `spaces` | a list of available spaces | "brain" "slice" "ortho" "raw" |
+| `keywords` | a list of reconstruction algorithms, libraries etc. | "b-spline" "elastic" "deep learning" |
+| `slices` | list of slice transforms | see slices |
+#### slices
+A list of source images, on which the current process is based.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
-| `path` | string | path to transform parameter directory, relative to {SAMPLE_ID}.vsr directory | "visor_recon_transforms/xxx_brain_10x_20241101" |
-| `roi` | list[float] | 3D roi coordinates in after-transform space, [x1,y1,z1,x2,y2,z2] | [0.0,0.0,0.0,256.0,256.0,256.0] |
+| `path` | string | path to slice directory, relative to visor_recon_transforms directory | "slice_1_10x" |
+| `transforms` | list[string] | list of available transforms | ["raw_to_ortho","raw_to_brain"] |
+
+### "transforms.json"
+List of reconstruction transforms.
+| FIELD | DESCRIPTION | EXAMPLE |
+|---|---|---|
+| `name` | name of transform directory, relative to slice directory | "raw_to_ortho" |
+| `type` | type of transform | "affine" "b-spline" "dense displacement field" "neural network" |
+| `format` | store format of transform | "npy" "zarr" "mha" "onnx" |
+
 
 ### Examples
 
@@ -290,7 +328,7 @@ Example: visor_raw_images/slice_1_10x.zarr/zarr.json
                 "pixel_size": 1.03,
                 "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
                 "v_software": "2.8.7",
-                "v_schema": "2025.5.2",
+                "v_schema": "2025.5.3",
                 "created_time": "2024-11-12T00:00:00Z",
                 "personnel": "YY"
             }]
@@ -449,13 +487,42 @@ Example: visor_recon_images/xxx_brain_40x_20241101.zarr/zarr.json
                     "channels": ["488","561"]
                 }
             ],
-            "transforms": [{
-                "path": "visor_recon_transforms/xxx_brain_20241101",
-                "roi": [0.0, 0.0, 0.0, 256.0, 256.0, 256.0]
-            }]
+            "transform_version": "xxx_20250525"
         }
     }
 }
+```
+
+Example: visor_recon_transforms/xxx_20250525/recon.json
+```json
+{
+    "personnel": "YY",
+    "create_time": "2025-05-25T20:25:05Z",
+    "spaces": ["raw","ortho","slice","brain"],
+    "keywords": ["SimpleITK","Elastix"],
+    "slices": [
+        {
+            "path": "slice_1_10x",
+            "transforms": ["raw_to_ortho", "raw_to_brain"]
+        }
+    ]
+}
+```
+
+Example: visor_recon_transforms/xxx_20250525/slice_1_10x/transforms.json
+```json
+[
+    {
+        "name": "raw_to_ortho",
+        "type": "affine",
+        "format": "zarr"
+    },
+    {
+        "name": "raw_to_brain",
+        "type": "b-spline",
+        "format": "mha"
+    }
+]
 ```
 
 ## Typical values
