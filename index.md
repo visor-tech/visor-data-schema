@@ -140,7 +140,7 @@ Information of the `sample`.
 A list of selected slices and channels. For raw images, a slice, or a channel, may be imaged multiple times; it is recommended to use the selected version listed here.
 | FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
-| `path` | path to slice zarr file, relative to visor_raw_images directory | "slice_1_10x.zarr" |
+| `name` | name of slice | "slice_1_10x" |
 | `channels` | list of wavelength channels | ["488","561"] |
 
 ### "zarr.json"
@@ -212,7 +212,7 @@ Information of the `reconstruction`.
 A list of source images, on which the current process is based.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
-| `path` | string | path to slice directory, relative to visor_recon_transforms directory | "slice_1_10x" |
+| `name` | string | name of slice | "slice_1_10x" |
 | `transforms` | list[string] | list of available transforms | ["raw_to_ortho","raw_to_brain"] |
 
 ### "transforms.json"
@@ -221,7 +221,7 @@ List of reconstruction transforms.
 |---|---|---|
 | `name` | name of transform directory, relative to slice directory | "raw_to_ortho" |
 | `type` | type of transform | "affine" "b-spline" "dense displacement field" "neural network" |
-| `format` | store format of transform | "npy" "zarr" "mha" "onnx" |
+| `format` | store format of transform | "npy" "zarr" "mha" "onnx" "tfm" |
 
 
 ### Examples
@@ -240,16 +240,16 @@ Example: visor_raw_images/selected.json
 ```json
 [
     {
-        "path": "slice_1_10x.zarr",
+        "name": "slice_1_10x",
         "channels": ["488","561"]
     },
     {
-        "path": "slice_1_10x_1.zarr",
+        "name": "slice_1_10x_1",
         "channels": ["405","640"]
     },
     ...
     {
-        "path": "slice_23_40x.zarr",
+        "name": "slice_23_40x",
         "channels": ["405","488","561","640"]
     }
 ]
@@ -502,7 +502,7 @@ Example: visor_recon_transforms/xxx_20250525/recon.json
     "keywords": ["SimpleITK","Elastix"],
     "slices": [
         {
-            "path": "slice_1_10x",
+            "name": "slice_1_10x",
             "transforms": ["raw_to_ortho", "raw_to_brain"]
         }
     ]
@@ -520,7 +520,7 @@ Example: visor_recon_transforms/xxx_20250525/slice_1_10x/transforms.json
     {
         "name": "raw_to_brain",
         "type": "b-spline",
-        "format": "mha"
+        "format": "tfm"
     }
 ]
 ```
