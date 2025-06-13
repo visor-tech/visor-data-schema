@@ -1,10 +1,10 @@
 This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html).
 
 ## Version
-2025.5.3
+2025.6.1
 
 ## Version Date
-2025-05-14
+2025-06-13
 
 ## Terms
 | TERM | DEFINITION |
@@ -184,7 +184,7 @@ A list of wavelength channels with corresponding axis index mappings.
 | `pixel_size` | float | micrometer/pixel | micrometer per pixel | 1.03 |
 | `roi` | list[float] | millimeter | 3D physical roi position coordinates for the slice, [top_left_x, top_left_y, top_left_z, bottom_right_x, bottom_right_y, bottom_right_z] | [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390] |
 | `v_software` | string | - | the version of microscope control software | "2.8.7" |
-| `v_schema` | string | - | the version of schema | "2025.5.3" |
+| `v_schema` | string | - | the version of schema | "2025.6.1" |
 | `created_time` | string | - | time when file created, in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format | "2024-05-18T00:00:00Z" |
 | `personnel` | string | - | name initials of the microscopist | "YY" |
 
@@ -328,7 +328,7 @@ Example: visor_raw_images/slice_1_10x.zarr/zarr.json
                 "pixel_size": 1.03,
                 "roi": [20.2647, 61.2581, 14.2395, 24.5047, 62.9141, 14.2390],
                 "v_software": "2.8.7",
-                "v_schema": "2025.5.3",
+                "v_schema": "2025.6.1",
                 "created_time": "2024-11-12T00:00:00Z",
                 "personnel": "YY"
             }]
