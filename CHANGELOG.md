@@ -1,6 +1,12 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2025.6.1]
+
+- use slice directory name instead of path
+
+[v2025.6.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2025.6.1
+
 ## [v2025.5.3]
 
 - updated visor_recon_transforms schema
