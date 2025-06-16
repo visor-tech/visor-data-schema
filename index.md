@@ -4,7 +4,7 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
 2025.6.1
 
 ## Version Date
-2025-06-13
+2025-06-16
 
 ## Terms
 | TERM | DEFINITION |
