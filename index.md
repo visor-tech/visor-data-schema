@@ -1,18 +1,30 @@
 This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, align with [OME-Zarr spec v0.5](https://ngff.openmicroscopy.org/0.5/index.html).
 
 ## Version
-2025.6.1
+2026.9.1
 
 ## Version Date
-2025-06-16
+2026-09-30
 
 ## Terms
 | TERM | DEFINITION |
 |---|---|
-| `sample` | Biomedical sample, e.g. a brain, may contain multiple 'slices' |
+| `sample` | Biomedical sample, e.g. a brain or a whole body, may contain multiple 'slices' |
 | `slice`  | Sample slice, may contain multiple 'stacks' |
 | `stack`  | A stack of 'frames' |
 | `frame`  | A 2D picture taken by microscopy camera |
+
+## Spaces
+Reconstruction transforms map points between four named spaces. A transform named `A_to_B` is a point map `T: A → B` (`p_B = T(p_A)`); composition follows `T_BC ∘ T_AB = T_AC`, and inverses are taken explicitly (`(T_AB)⁻¹ = T_BA`). **Resampling is pull-back**: to fill an output grid in space *A* from data defined on space *B*, sample the source at `T_A_to_B(p)` for every output point `p ∈ A`.
+
+| SPACE | AXES / UNITS | ORIGIN | NOTES |
+|---|---|---|---|
+| `raw` | array axes `vs/ch/z/y/x`; x = frame width pixels (fast axis), y = frame height pixels, z = frame index along the stage scan (step = frame pitch, sign = scan direction); C memory order | (0, 0, 0) at the first frame corner, per stack, per channel | the stored frames themselves; each x–y plane is one `frame`, and the frame plane is oblique (±45° light sheet) to the physical slice plane — the obliquity is carried by `raw_to_ortho`, it is not part of raw space |
+| `ortho` | micrometer, per stack | the stack's stage position (from acquisition metadata) | de-skewed, scaled, positioned; the ±45° de-skew lives in `raw_to_ortho` |
+| `slice` | micrometer, per slice | the sample-wide min corner of the slice's stack bounds | the slice's stacks registered into one frame |
+| `sample` | micrometer, whole specimen | slice *i* owns z ∈ [z_i, z_i + t_i); x/y origin 0 | slices stacked along z; the placement (fixed nominal thickness or measured per-slice thickness) is recorded with the transforms. `brain` is accepted as a legacy alias of `sample` (specimens are not limited to brain) |
+
+Schema v2025.6.1 named the fourth space `brain`; `sample` supersedes it (`slice_to_brain` → `slice_to_sample`).
 
 ## Data Schema
 ```
@@ -99,8 +111,12 @@ This is the image data schema of VISoR `(pronounced /ˈvaɪ.zər/)` technology, 
              |
              ├── raw_to_ortho          # transform from visor raw image space to orthogonal space
              ├── raw_to_slice          # transform from visor raw image space to slice space
-             ├── raw_to_brain          # transform from visor raw image space to brain space
-             └── slice_to_brain        # transform from slice space to brain space
+             ├── raw_to_sample         # transform from visor raw image space to sample space
+             ├── slice_to_sample       # transform from slice space to sample space
+             |                         # (brain is accepted as a legacy alias of sample, e.g. slice_to_brain)
+             |
+             ├── [quality.json]        # optional extension block: per-transform quality metrics
+             └── [anchor.json]         # optional extension block: anchor frame + placement policy
 
 ```
 
@@ -204,16 +220,17 @@ Information of the `reconstruction`.
 | FIELD | DESCRIPTION | EXAMPLE |
 |---|---|---|
 | `personnel` | person who did reconstruction | "YY" |
-| `create_time` | time when reconstruction finished, in ISO 8601 format | "2024-05-18T00:00:00Z" |
-| `spaces` | a list of available spaces | "brain" "slice" "ortho" "raw" |
+| `create_time` | time when reconstruction finished, in the ISO 8601 format | "2024-05-18T00:00:00Z" |
+| `spaces` | a list of available spaces | "sample" "slice" "ortho" "raw" |
 | `keywords` | a list of reconstruction algorithms, libraries etc. | "b-spline" "elastic" "deep learning" |
 | `slices` | list of slice transforms | see slices |
+| `parameters` | optional; the effective parameter set of the reconstruction run (preset name + values), for reproducibility | {"preset": "mouse_body", ...} |
 #### slices
 A list of source images, on which the current process is based.
 | FIELD | TYPE | DESCRIPTION | EXAMPLE |
 |---|---|---|---|
 | `name` | string | name of slice | "slice_1_10x" |
-| `transforms` | list[string] | list of available transforms | ["raw_to_ortho","raw_to_brain"] |
+| `transforms` | list[string] | list of available transforms | ["raw_to_ortho","raw_to_sample"] |
 
 ### "transforms.json"
 List of reconstruction transforms.
@@ -222,6 +239,28 @@ List of reconstruction transforms.
 | `name` | name of transform directory, relative to slice directory | "raw_to_ortho" |
 | `type` | type of transform | "affine" "b-spline" "dense displacement field" "neural network" |
 | `format` | store format of transform | "npy" "zarr" "mha" "onnx" "tfm" |
+| `direction` | optional; declares the actual mapping direction of the stored transform, `"{space}_to_{space}"`. Defaults to `name`. The name only identifies the entry; `direction` decides the mapping semantics (see "Transform layout") | "raw_to_slice" |
+
+#### Transform layout
+Inside one slice directory, a transform directory `{name}` holds:
+```
+{name}/{stack}/{channel}/{type}.{format}      per stack+channel (e.g. per-stack affines)
+{name}/{channel}/{type}.{format}              per channel only
+{name}/{type}.{format}                        slice-level (one transform for the whole slice)
+```
+- stack / channel are numeric indices (0-based), matching the `visor_stacks` and `channels` axis indices.
+- `direction` matters when a transform is stored in the opposite direction of its name: readers must return a point map in the requested direction, inverting when necessary (affines invert analytically; dense displacement fields do not — store the required direction explicitly).
+
+#### Per-slice grouping
+Transforms are grouped by slice on purpose: resampling selects a ROI or reads per-slice chunks in parallel, and never needs a whole-sample transform at once. Whole-sample compositions (`raw_to_sample`) are therefore **derived on demand** and not stored — storing them would duplicate geometry.
+
+#### Extension blocks
+Optional per-slice sidecar files (JSON) follow the schema's extension idiom:
+| FILE | CONTENT |
+|---|---|
+| `quality.json` | per-transform quality metrics (e.g. per-stack / per-interface / per-block NCC, SSIM, residuals) |
+| `anchor.json` | anchor frame description + slice placement policy (nominal vs measured thickness) |
+The effective parameter set of a reconstruction run may be recorded in `recon.json` as `parameters`.
 
 
 ### Examples
@@ -498,12 +537,12 @@ Example: visor_recon_transforms/xxx_20250525/recon.json
 {
     "personnel": "YY",
     "create_time": "2025-05-25T20:25:05Z",
-    "spaces": ["raw","ortho","slice","brain"],
+    "spaces": ["raw","ortho","slice","sample"],
     "keywords": ["SimpleITK","Elastix"],
     "slices": [
         {
             "name": "slice_1_10x",
-            "transforms": ["raw_to_ortho", "raw_to_brain"]
+            "transforms": ["raw_to_ortho", "raw_to_sample"]
         }
     ]
 }
@@ -515,12 +554,14 @@ Example: visor_recon_transforms/xxx_20250525/slice_1_10x/transforms.json
     {
         "name": "raw_to_ortho",
         "type": "affine",
-        "format": "zarr"
+        "format": "tfm",
+        "direction": "raw_to_ortho"
     },
     {
-        "name": "raw_to_brain",
-        "type": "b-spline",
-        "format": "tfm"
+        "name": "sample_to_slice",
+        "type": "dense displacement field",
+        "format": "mha",
+        "direction": "sample_to_slice"
     }
 ]
 ```

@@ -1,6 +1,19 @@
 # Changelog
 
 <!-- format ref: https://github.com/vweevers/common-changelog -->
+## [v2026.9.1]
+
+- defined the four spaces (raw / ortho / slice / sample) with axes, units and origins; documented raw-space axes (vs/ch/z/y/x; z = frame index along the stage scan)
+- renamed space `brain` to `sample` (specimens are not limited to brain); `brain` accepted as a legacy alias
+- specified transform direction mathematically: `A_to_B` is a point map T: A → B; resampling is pull-back; optional `direction` field in transforms.json declares the stored mapping direction
+- documented the transform directory inner layout: per stack+channel, per channel, and slice-level
+- recommended per-slice transform grouping; whole-sample transforms (raw_to_sample) derived on demand, not stored
+- added optional extension blocks: per-slice quality.json and anchor.json; optional parameters field in recon.json
+- updated LICENSE from BSD 3-Clause to Apache License 2.0 (patent grant;
+  all copyright holders consented)
+
+[v2026.9.1]: https://github.com/visor-tech/visor-data-schema/releases/tag/v2026.9.1
+
 ## [v2025.6.1]
 
 - use slice directory name instead of path
